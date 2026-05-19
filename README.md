@@ -71,62 +71,164 @@ xCrab Agent 由三个核心组件组成：
 
 ## 部署指南
 
-### 方式一：完整部署（推荐）
+### 环境要求
 
+- Node.js v22+
+- npm 或 pnpm
+
+### Ubuntu 系统部署
+
+**方式一：源码安装**
+
+```bash
+# 1. 安装 Node.js 22
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# 2. 克隆项目
+git clone https://github.com/yzp100911/xCrab-Agent.git
+cd xCrab-Agent
+
+# 3. 安装依赖
+npm install
+
+# 4. 配置
+cp .env.example .env
+nano .env  # 编辑填入 API Key
+
+# 5. 运行
+npm start
 ```
-                    ┌──────────────────┐
-                    │   云服务器        │
-                    │   Ubuntu 24.04   │
-                    │                  │
-                    │  ┌────────────┐  │
-                    │  │ eClaw      │  │
-                    │  │ Server     │  │←── 用户浏览器
-                    │  └─────┬──────┘  │
-                    │        │         │
-                    │  ┌─────▼──────┐  │
-                    │  │ Claw       │  │
-                    │  │ Client     │  │
-                    │  └─────┬──────┘  │
-                    │        │         │
-                    │  ┌─────▼──────┐  │
-                    │  │ xCrab      │  │
-                    │  │ Agent      │  │
-                    │  └────────────┘  │
-                    └──────────────────┘
+
+**方式二：Docker 部署**
+
+```bash
+# 1. 安装 Docker
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+
+# 2. 克隆并启动
+git clone https://github.com/yzp100911/xCrab-Agent.git
+cd xCrab-Agent
+docker-compose up -d
 ```
 
-**步骤：**
+**方式三：PM2 进程管理（生产环境推荐）**
 
-1. **部署 xCrab Agent**
-   ```bash
-   # 在服务器上
-   git clone https://github.com/yzp100911/xCrab-Agent.git
-   cd xCrab-Agent
-   npm install
-   cp .env.example .env
-   # 编辑 .env 填入 API Key
-   npm start
-   ```
+```bash
+# 1. 安装 PM2
+sudo npm install -g pm2
 
-2. **部署 Claw Client**
-   ```bash
-   git clone https://github.com/yzp100911/claw-client.git
-   cd claw-client/cclaw
-   npm install
-   # 编辑 index.js 配置服务器地址
-   ./start.sh
-   ```
+# 2. 启动项目
+pm2 start npm --name "xcrab" -- start
 
-3. **部署 eClaw Server**
-   ```bash
-   git clone https://github.com/yzp100911/eclaw-server.git
-   cd eclaw-server
-   npm install
-   # 编辑 .env 配置数据库和 xCrab 地址
-   npm start
-   ```
+# 3. 设置开机自启
+pm2 save
+pm2 startup
+```
 
-### 方式二：仅使用 xCrab Agent
+**后台运行**
+
+```bash
+# 使用 nohup 后台运行
+nohup npm start > xcrab.log 2>&1 &
+
+# 查看进程
+ps aux | grep xcrab
+
+# 查看日志
+tail -f xcrab.log
+```
+
+### Windows 系统部署
+
+**方式一：源码安装**
+
+```powershell
+# 1. 安装 Node.js 22
+# 从 https://nodejs.org/ 下载并安装
+
+# 2. 克隆项目（使用 Git Bash 或 PowerShell）
+git clone https://github.com/yzp100911/xCrab-Agent.git
+cd xCrab-Agent
+
+# 3. 安装依赖
+npm install
+
+# 4. 配置
+copy .env.example .env
+# 用编辑器编辑 .env 填入 API Key
+
+# 5. 运行
+npm start
+```
+
+**方式二：Docker 部署**
+
+```powershell
+# 1. 安装 Docker Desktop
+# 从 https://docker.com 下载安装
+
+# 2. 克隆并启动
+git clone https://github.com/yzp100911/xCrab-Agent.git
+cd xCrab-Agent
+docker-compose up -d
+```
+
+**方式三：PM2 全局安装**
+
+```powershell
+# 全局安装 PM2
+npm install -g pm2
+
+# 启动项目
+pm2 start npm --name "xcrab" -- start
+
+# 设置开机自启
+pm2 startup
+pm2 save
+```
+
+**后台运行**
+
+```powershell
+# Windows 任务计划程序或
+Start-Process -FilePath "node" -ArgumentList "index.js" -WindowStyle Hidden
+```
+
+### 验证安装
+
+启动后访问：`http://localhost:3000`
+
+如果能看到 Web 控制台界面，说明安装成功。
+
+### 配置说明
+
+编辑 `.env` 文件：
+
+```env
+# MiniMax 配置
+MINIMAX_API_KEY=your_minimax_api_key
+MINIMAX_MODEL=abab6.5s-chat
+
+# DeepSeek 配置
+DEEPSEEK_API_KEY=your_deepseek_api_key
+DEEPSEEK_MODEL=deepseek-chat
+
+# 网关配置
+GATEWAY_PORT=3000
+AUTH_TOKEN=your_auth_token
+```
+
+### 完整部署（推荐）
+
+如果需要完整部署（网页端 + 执行端 + 网关），请参考各组件仓库的部署说明：
+
+- [xCrab-Agent](https://github.com/yzp100911/xCrab-Agent) — 多模型网关
+- [eClaw Server](https://github.com/yzp100911/eclaw-server) — 网页服务端
+- [Claw Client](https://github.com/yzp100911/claw-client) — 执行端
+
+### 仅使用 xCrab Agent
 
 如果只需要多模型网关功能，可以单独部署 xCrab Agent：
 
@@ -147,6 +249,8 @@ npm start
 cd xCrab-Agent
 docker-compose up -d
 ```
+
+### 项目结构
 
 ## 环境要求
 
