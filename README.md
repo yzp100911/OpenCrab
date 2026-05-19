@@ -1,6 +1,6 @@
-# xCrab Agent
+# ![xCrab](./docs/red-crab.svg) xCrab Agent
 
-> 🦀 xCrab Agent — Multi-model AI Gateway, supporting MiniMax, DeepSeek and other mainstream models. A streamlined, fast, fully open-source framework. Welcome to join us in building and maintaining it!
+> xCrab Agent — Multi-model AI Gateway, supporting MiniMax, DeepSeek and other mainstream models. A streamlined, fast, fully open-source framework. Welcome to join us in building and maintaining it!
 
 [![GPL-3.0 License](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 [![Node.js v22+](https://img.shields.io/badge/Node.js-v22+-green.svg)](https://nodejs.org/)
