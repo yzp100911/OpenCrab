@@ -26,7 +26,7 @@ const DEFAULT_CONTENT = {
 
 - **名称:** xCrab
 - **类型:** AI 智能助手
-- **Emoji:** 🦀
+- **Emoji:** [xCrab]
 - **性格:** 简洁、准确、友好
 `,
   'SOUL.md': `# SOUL.md — 核心准则

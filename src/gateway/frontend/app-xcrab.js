@@ -49,7 +49,7 @@ function newSession() {
   localStorage.setItem('xcrab_session', currentSessionId);
   document.getElementById('chat-box').innerHTML = `
     <div class="welcome">
-      <div class="welcome-icon">🦀</div>
+      <div class="welcome-icon">[xCrab]</div>
       <div class="welcome-title">xCrab AI 助手</div>
       <div class="welcome-desc">迷你 · 敏捷 · 强大</div>
     </div>`;
@@ -62,7 +62,7 @@ function newSession() {
 function clearChat() {
   document.getElementById('chat-box').innerHTML = `
     <div class="welcome">
-      <div class="welcome-icon">🦀</div>
+      <div class="welcome-icon">[xCrab]</div>
       <div class="welcome-title">xCrab AI 助手</div>
       <div class="welcome-desc">迷你 · 敏捷 · 强大</div>
     </div>`;
@@ -88,7 +88,7 @@ async function sendMessage() {
   aiMsg.className = 'msg msg-ai';
   aiMsg.id = 'msg-waiting';
   aiMsg.innerHTML = `
-    <div class="msg-avatar">🦀</div>
+    <div class="msg-avatar">[xCrab]</div>
     <div class="msg-bubble msg-bubble-ai">
       <div class="thinking-dots"><span>.</span><span>.</span><span>.</span></div>
     </div>`;
@@ -346,7 +346,7 @@ function restoreCurrentSession() {
   if (!session || !session.messages || session.messages.length === 0) {
     chatBox.innerHTML = `
       <div class="welcome">
-        <div class="welcome-icon">🦀</div>
+        <div class="welcome-icon">[xCrab]</div>
         <div class="welcome-title">xCrab AI 助手</div>
         <div class="welcome-desc">迷你 · 敏捷 · 强大</div>
       </div>`;
