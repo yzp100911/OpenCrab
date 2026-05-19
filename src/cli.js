@@ -18,7 +18,7 @@ function estimateTokenCount(text) {
 const BANNER = `
   ╔══════════════════════════════════════╗
   ║       xCrab — AI 助手       ║
-  ║    🦞 迷你 · 敏捷 · 强大           ║
+  ║    🦀 迷你 · 敏捷 · 强大           ║
   ╚══════════════════════════════════════╝
   输入 /help 查看命令 · /clear 清空对话 · /quit 退出
 `;
@@ -101,7 +101,7 @@ export async function startCLI(skillManager) {
 
   const ask = () => new Promise(resolve => {
     try {
-      rl.question('  🦞 ', input => resolve(input));
+      rl.question('  🦀 ', input => resolve(input));
     } catch {
       resolve('/quit');
     }
