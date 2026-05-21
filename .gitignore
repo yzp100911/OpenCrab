@@ -1,0 +1,33 @@
+# Secrets
+.env
+.env.*
+auth.json
+*.token
+*.secret
+
+# Database / Memories
+memory/
+memories/
+*.db
+*.db-wal
+*.db-shm
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Data
+data/
+mcp-servers/
+
+# Node
+node_modules/
+
+# Logs
+*.log
+
+# Playwright
+.playwright-cli/
+.playwright-mcp/
