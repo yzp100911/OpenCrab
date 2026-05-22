@@ -574,6 +574,9 @@
                     iconEl.classList.remove('active');
                     iconEl.style.color = '';
                 }
+            } else if (data.code === 401) {
+                logout();
+                showAlert('error', '登录已过期，请重新登录');
             } else {
                 showAlert('error', data.message || '操作失败');
             }
@@ -604,6 +607,9 @@
                     `).join('');
                 }
                 document.getElementById('favorites-modal').style.display = 'flex';
+            } else if (data.code === 401) {
+                logout();
+                showAlert('error', '登录已过期，请重新登录');
             }
         } catch (e) {
             showAlert('error', '获取收藏失败');
@@ -615,7 +621,7 @@
         try {
             const res = await fetch(host + '/api/favorites/toggle', {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + currentToken
                 },
@@ -625,19 +631,22 @@
             if (data.code === 200) {
                 const el = document.getElementById(`fav-item-${msgId}`);
                 if (el) el.remove();
-                
+
                 // 同步取消主界面上的高亮星号
                 const starIcon = document.getElementById(`star-${msgId}`);
                 if (starIcon) {
                     starIcon.classList.remove('active');
                     starIcon.style.color = '';
                 }
-                
+
                 // 检查是否空了
                 const listEl = document.getElementById('favorites-list');
                 if (listEl.children.length === 0) {
                     listEl.innerHTML = '<div style="color:var(--text-sub);text-align:center;padding:20px;">暂无收藏</div>';
                 }
+            } else if (data.code === 401) {
+                logout();
+                showAlert('error', '登录已过期，请重新登录');
             } else {
                 showAlert('error', data.message || '取消失败');
             }

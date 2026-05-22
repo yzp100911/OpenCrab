@@ -54,29 +54,31 @@ function loadToken() {
     return null;
 }
 
-function startClient() {
-    // 如果认证失败过，就不要再用旧 token 了，直接让用户重新登录
-    if (authFailed) {
-        console.log('凭据已失效，请重新登录。\n');
-        authFailed = false; // 重置标记
-    } else {
-        const savedToken = loadToken();
-        if (savedToken) {
-            console.log('检测到本地保存的登录凭据，尝试自动恢复连接...');
-            currentToken = savedToken;
-            connectWebSocket(savedToken);
+// 尝试通过本地 API 免密获取 token（同机部署，无需密码）
+async function tryLocalToken() {
+    try {
+        const localUser = process.env.CCLAW_USERNAME || 'yzp1009';
+        console.log('尝试从本地服务端获取 token（用户: ' + localUser + '）...');
+        const res = await axios.post('http://127.0.0.1:10090/api/local_token',
+            { username: localUser }, { timeout: 5000 });
+        if (res.data.code === 200) {
+            saveToken(res.data.token);
+            currentToken = res.data.token;
+            console.log('本地 token 获取成功，准备建立连接...');
+            connectWebSocket(res.data.token);
             return;
         }
+    } catch (e) {
+        console.error('本地 token 获取失败（服务端可能未运行）:', e.message);
     }
-
+    // 本地获取失败，回退到交互式登录
+    console.log('需要手动登录。');
     rl.question('请输入账号：', (username) => {
         rl.question('请输入密码: ', (password) => {
             if (username === 'yzp1009' || username === 'ad1009') {
-                // 免验证码登录（信任账号可直接登录）
                 loginAndConnect(username, password, '', '');
                 return;
             }
-            
             rl.question('请输入绑定的手机号: ', (phone) => {
                 if (!username || !password || !phone) {
                     console.log('输入不能为空，请重新输入');
@@ -86,6 +88,28 @@ function startClient() {
             });
         });
     });
+}
+
+function startClient() {
+    // 如果认证失败过，尝试通过本地 API 获取新 token
+    if (authFailed) {
+        console.log('凭据已失效，尝试自动获取新 token...');
+        authFailed = false; // 重置标记
+        tryLocalToken();
+        return;
+    }
+
+    const savedToken = loadToken();
+    if (savedToken) {
+        console.log('检测到本地保存的登录凭据，尝试自动恢复连接...');
+        currentToken = savedToken;
+        connectWebSocket(savedToken);
+        return;
+    }
+
+    // 没有保存的 token，尝试本地签发
+    tryLocalToken();
+    return;
 }
 
 async function sendSmsAndLogin(username, password, phone) {

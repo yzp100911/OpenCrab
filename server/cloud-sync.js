@@ -17,8 +17,8 @@ const DB_USER = 'wclaw_db';
 const DB_PASS = '100911yzpYZP';
 const DB_NAME = 'wclaw_db';
 
-// 隧道本地监听端口
-const TUNNEL_PORT = 3307;
+// MySQL 端口（服务端、执行端、网页端都在同一台服务器，直连 3306）
+const DB_PORT = 3306;
 
 // ====== SSH 隧道管理 ======
 let tunnelProcess = null;
@@ -28,76 +28,8 @@ let tunnelProcess = null;
  * @returns {Promise<void>}
  */
 function startTunnel() {
-    return new Promise((resolve, reject) => {
-        if (tunnelProcess) {
-            console.log('[Cloud Tunnel] 隧道已在运行中');
-            return resolve();
-        }
-
-        tunnelProcess = spawn('ssh', [
-            '-i', SSH_KEY,
-            '-o', 'StrictHostKeyChecking=no',
-            '-o', 'ConnectTimeout=10',
-            '-o', 'ServerAliveInterval=30',
-            '-o', 'ExitOnForwardFailure=yes',
-            '-L', `${TUNNEL_PORT}:127.0.0.1:3306`,
-            '-N',
-            SSH_HOST
-        ], {
-            windowsHide: true,
-            stdio: ['ignore', 'pipe', 'pipe']
-        });
-
-        let hasResolved = false;
-
-        tunnelProcess.on('error', (err) => {
-            console.error('[Cloud Tunnel] 启动失败:', err.message);
-            tunnelProcess = null;
-            if (!hasResolved) { hasResolved = true; reject(err); }
-        });
-
-        tunnelProcess.on('close', (code) => {
-            console.log(`[Cloud Tunnel] 进程已退出 (code: ${code})`);
-            tunnelProcess = null;
-            if (!hasResolved) { hasResolved = true; reject(new Error(`SSH tunnel exited with code ${code}`)); }
-        });
-
-        tunnelProcess.stderr.on('data', (data) => {
-            const msg = data.toString();
-            // SSH 的调试信息可能输出到 stderr，忽略已知的提示
-            if (msg.includes('Warning:') || msg.trim()) {
-                console.log('[Cloud Tunnel]', msg.trim());
-            }
-        });
-
-        // 等待隧道端口可用
-        let retries = 0;
-        const checkPort = setInterval(() => {
-            const sock = new net.Socket();
-            sock.setTimeout(1000);
-            sock.on('connect', () => {
-                sock.destroy();
-                clearInterval(checkPort);
-                if (!hasResolved) {
-                    hasResolved = true;
-                    console.log(`[Cloud Tunnel] SSH 隧道已建立 (127.0.0.1:${TUNNEL_PORT} → 云 MySQL:3306)`);
-                    resolve();
-                }
-            });
-            sock.on('error', () => {
-                sock.destroy();
-                retries++;
-                if (retries > 15) { // 15 秒超时
-                    clearInterval(checkPort);
-                    if (!hasResolved) {
-                        hasResolved = true;
-                        reject(new Error('SSH tunnel port check timeout'));
-                    }
-                }
-            });
-            sock.connect(TUNNEL_PORT, '127.0.0.1');
-        }, 1000);
-    });
+    // 服务端、执行端、网页端都在同一台服务器，无需 SSH 隧道
+    return Promise.resolve();
 }
 
 /**
@@ -117,7 +49,7 @@ function stopTunnel() {
 function getCloudDbConfig() {
     return {
         host: '127.0.0.1',
-        port: TUNNEL_PORT,
+        port: DB_PORT,
         user: DB_USER,
         password: DB_PASS,
         database: DB_NAME,
@@ -167,26 +99,14 @@ function execSqlOnCloud(sql) {
  * 同步收藏到云服务器（备用接口）
  */
 async function syncFavorite(username, msgId, content) {
-    const sql = `INSERT INTO favorites (username, msg_id, content) VALUES (${escapeSql(username)}, ${escapeSql(msgId)}, ${escapeSql(content)}) ON DUPLICATE KEY UPDATE content = VALUES(content);`;
-    try {
-        await execSqlOnCloud(sql);
-        console.log(`[Cloud Sync] 收藏已同步: ${username}/${msgId}`);
-    } catch (err) {
-        console.error('[Cloud Sync] 收藏同步失败:', err.message);
-    }
+    // 所有端都在同一台服务器，数据已直连写入，无需额外同步
 }
 
 /**
  * 从云服务器取消收藏同步（备用接口）
  */
 async function unsyncFavorite(username, msgId) {
-    const sql = `DELETE FROM favorites WHERE username = ${escapeSql(username)} AND msg_id = ${escapeSql(msgId)};`;
-    try {
-        await execSqlOnCloud(sql);
-        console.log(`[Cloud Sync] 取消收藏已同步: ${username}/${msgId}`);
-    } catch (err) {
-        console.error('[Cloud Sync] 取消收藏同步失败:', err.message);
-    }
+    // 所有端都在同一台服务器，数据已直连写入，无需额外同步
 }
 
 module.exports = {

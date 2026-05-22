@@ -451,6 +451,23 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+// 本地 localhost-only token 签发（供同机 cclaw 自动恢复连接使用，无需密码）
+app.post('/api/local_token', (req, res) => {
+    const ip = req.ip || req.connection.remoteAddress;
+    if (ip !== '127.0.0.1' && ip !== '::1' && ip !== '::ffff:127.0.0.1') {
+        return res.status(403).json({ code: 403, message: '仅限本地调用' });
+    }
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ code: 400, message: '用户名不能为空' });
+    // 仅限信任账号免验证码签发 token
+    if (username !== 'yzp1009' && username !== 'ad1009') {
+        return res.status(403).json({ code: 403, message: '该账号不允许免密签发 Token' });
+    }
+    const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: '7d' });
+    console.log(`[本地Token] 为 ${username} 签发了新 token`);
+    res.json({ code: 200, token });
+});
+
 // HTTP 接口：wclaw 发送指令给 eclaw
 app.post('/api/command', (req, res) => {
     const authHeader = req.headers.authorization;
