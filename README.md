@@ -16,9 +16,9 @@
   └─────────────────┘     └──────────────────┘     └──────────────────┘
 ```
 
-> - **xCrab-Agent** = AI 对话引擎（你面前的智能助手）
-> - **eclaw-server** = 中转服务器（网页端 ↔ 执行端 的桥梁）
-> - **claw-client** = 执行终端（在目标服务器上执行命令）
+> - [**xCrab-Agent**](https://github.com/yzp100911/xCrab-Agent) = AI 对话引擎（你面前的智能助手）
+> - [**eclaw-server**](https://github.com/yzp100911/eclaw-server) = 中转服务器（网页端 ↔ 执行端 的桥梁）
+> - [**claw-client**](https://github.com/yzp100911/claw-client) = 执行终端（在目标服务器上执行命令）
 
 ---
 
