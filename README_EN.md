@@ -79,16 +79,16 @@ cd xCrab-Agent
 ### 3️⃣ Install All Dependencies
 
 ```bash
-# Option 1: One-click install
+# One-click install
 npm run install:all
 
-# Option 2: Manual step-by-step
-npm install                        # xCrab-Agent
-cd server && npm install && cd ..   # eclaw-server
-cd client && npm install && cd ..   # claw-client
+# Or simply:
+npm install
 ```
 
-> ⚠️ If `better-sqlite3` fails to compile, install **Visual Studio Build Tools** (with C++ tools), or run:
+> ⚠️ All component dependencies are unified in the root `package.json`. A single `npm install` is all you need.
+>
+> If `better-sqlite3` fails to compile, install **Visual Studio Build Tools** (with C++ tools), or run:
 > ```bash
 > npm install better-sqlite3 --force
 > ```
@@ -110,19 +110,18 @@ Open `.env` with Notepad or VS Code, fill in required keys:
 
 ### 5️⃣ Start Components
 
-**Start AI Engine:**
 ```bash
+# Start AI Engine
 npm start
-```
 
-**Start Relay Server** (new terminal):
-```bash
-node server/server.js
-```
+# Start Relay Server (new terminal)
+npm run start:server
 
-**Start Execution Terminal** (new terminal):
-```bash
-node client/index.js
+# Start Execution Terminal (new terminal)
+npm run start:client
+
+# Or start everything with one command
+npm run start:all
 ```
 
 ---
@@ -162,20 +161,10 @@ cd xCrab-Agent
 ### 3️⃣ Install All Dependencies
 
 ```bash
-# Option 1: One-click
+# One-click install
 npm run install:all
 # or bash install-all.sh
-
-# Option 2: Manual
-npm install
-cd server && npm install && cd ..
-cd client && npm install && cd ..
 ```
-
-> If `better-sqlite3` fails:
-> ```bash
-> sudo apt-get install -y build-essential python3
-> ```
 
 ### 4️⃣ Configure Environment
 
@@ -188,38 +177,84 @@ nano .env   # Fill in API keys
 
 ```bash
 # Start AI Engine
-node index.js
+npm start
 
 # Start Relay Server (new terminal)
-node server/server.js
+npm run start:server
 
 # Start Execution Terminal (new terminal)
-node client/index.js
+npm run start:client
+
+# Or start everything
+npm run start:all
 ```
 
 ### 6️⃣ ★ Auto-start with systemd
 
-**All components have systemd service files:**
+**All three components have systemd service templates:**
 
 ```bash
-# 🧠 xCrab-Agent
-sudo cp xcrab.service /etc/systemd/system/
-# 
-sudo systemctl enable xcrab
-sudo systemctl start xcrab
+# 🧠 xCrab-Agent systemd service
+sudo tee /etc/systemd/system/xcrab-agent.service > /dev/null << 'EOF'
+[Unit]
+Description=xCrab-Agent AI Engine
+After=network.target
 
-# 📡 eclaw-server
-# 暂无服务文件，手动启动: /etc/systemd/system/
-# node server/server.js &
-# 
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/xCrab-Agent
+ExecStart=/usr/bin/node /path/to/xCrab-Agent/index.js
+Restart=always
+RestartSec=5
 
-# 🤖 claw-client
-sudo cp client/cclaw.service /etc/systemd/system/
-sudo systemctl enable cclaw
-sudo systemctl start cclaw
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 📡 eclaw-server systemd service
+sudo tee /etc/systemd/system/eclaw-server.service > /dev/null << 'EOF'
+[Unit]
+Description=Eclaw-Server (Message Relay)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/xCrab-Agent/server
+ExecStart=/usr/bin/node /path/to/xCrab-Agent/server/server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 🤖 claw-client systemd service
+sudo tee /etc/systemd/system/claw-client.service > /dev/null << 'EOF'
+[Unit]
+Description=Claw-Client (Remote Terminal)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/xCrab-Agent/client
+ExecStart=/usr/bin/node /path/to/xCrab-Agent/client/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload and start
+sudo systemctl daemon-reload
+sudo systemctl enable xcrab-agent eclaw-server claw-client
+sudo systemctl start xcrab-agent eclaw-server claw-client
 ```
 
-> ⚠️ Remember to update `WorkingDirectory` and `ExecStart` paths in `.service` files to your actual deployment path.
+> ⚠️ Replace `/path/to/xCrab-Agent` with your actual deployment path.
 
 ---
 
@@ -265,10 +300,11 @@ sudo systemctl start cclaw
 ```
 xCrab-Agent/
 ├── index.js                   # 🧠 AI entry point
-├── package.json               # Root dependencies
+├── package.json               # Unified dependency management (all components)
 ├── .env                       # Environment config (copy from .env.example)
 ├── .env.example               # Environment variable template
 ├── install-all.sh             # One-click install script (Linux)
+├── LICENSE                    # MIT License
 │
 ├── src/                       # 🧠 AI core source code
 │   ├── cli.js                 # CLI interaction
@@ -283,9 +319,9 @@ xCrab-Agent/
 ├── skills/                    # 🧠 Skill modules
 ├── tests/                     # 🧠 Test files
 │
-├── server/                     # 📡 Relay dispatch server
+├── server/                    # 📡 eclaw-server (Relay Dispatch Server)
 │   ├── server.js              # Main server entry
-│   ├── package.json           # Dependencies (CommonJS)
+│   ├── package.json           # Standalone deps (CommonJS)
 │   ├── cloud-sync.js          # Cloud sync
 │   ├── wclaw/                 # Web frontend
 │   │   ├── index.html         # Main page
@@ -297,20 +333,19 @@ xCrab-Agent/
 │   │   └── icon/              # Icons
 │   └── README.md              # Deployment docs
 │
-├── client/                     # 🤖 Remote execution terminal
+├── client/                    # 🤖 claw-client (Remote Execution Terminal)
 │   ├── index.js               # Terminal entry
-│   ├── package.json           # Dependencies (CommonJS)
+│   ├── package.json           # Standalone deps (CommonJS)
 │   ├── status-monitor.js      # Status monitor
-│   ├── send_hello.py          # Send greeting
 │   ├── start.sh               # Startup script
-│   ├── .playwright-cli/       # Playwright CLI
 │   └── README.md              # Deployment docs
 │
-├── xcrab.service              # 🧠 AI systemd service file
-├── server/server.js (手动启动)        # 📡 Relay systemd service file
-├── client/cclaw.service        # 🤖 Terminal systemd service file
+├── data/                      # 🧠 AI runtime data
+├── uploads/                   # 📡 File upload directory
+├── memory/                    # 🧠 Persistent memory
 │
-├── uploads/                   # File upload directory
+├── client/cclaw.service       # 🤖 Terminal systemd service template
+│
 └── README.md                  # This file (CN/EN)
 ```
 

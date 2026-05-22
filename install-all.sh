@@ -1,7 +1,7 @@
 #!/bin/bash
 # ══════════════════════════════════════════════
 # xCrab 全家桶 — 一键安装脚本
-# 安装 xCrab-Agent + eclaw-server + claw-client
+# 安装 xCrab-Agent + Eclaw-Server + Claw-Client
 # ══════════════════════════════════════════════
 
 set -e
@@ -9,36 +9,26 @@ set -e
 echo "🦀 xCrab 全家桶安装中..."
 echo ""
 
-# 1. 安装 xCrab-Agent 依赖
-echo "━━━ [1/3] 安装 🧠 xCrab-Agent 依赖 ━━━"
+# 1. 安装 xCrab-Agent 依赖（含 server/ 和 client/）
+echo "━━━ [安装] 🧠 xCrab-Agent（含所有组件依赖） ━━━"
 cd "$(dirname "$0")"
 npm install
-echo "✅ xCrab-Agent 完成"
-echo ""
-
-# 2. 安装 eclaw-server 依赖
-echo "━━━ [2/3] 安装 📡 eclaw-server 依赖 ━━━"
-cd eclaw
-npm install
-cd ..
-echo "✅ eclaw-server 完成"
-echo ""
-
-# 3. 安装 claw-client 依赖
-echo "━━━ [3/3] 安装 🤖 claw-client 依赖 ━━━"
-cd cclaw
-npm install
-cd ..
-echo "✅ claw-client 完成"
+echo "✅ xCrab-Agent 安装完成"
 echo ""
 
 echo "═══════════════════════════════════════"
 echo "🎉 xCrab 全家桶安装完成！"
 echo ""
-echo "接下来："
-echo "  1. cp .env.example .env  # 配置环境变量"
-echo "  2. 按需启动各组件："
-echo "     - 🧠 AI:     node index.js"
-echo "     - 📡 中转:   node eclaw/server.js"
-echo "     - 🤖 执行:   node cclaw/index.js"
+echo "📁 目录结构："
+echo "  ./              - 🧠 xCrab-Agent（AI 大脑）"
+echo "  ./server/       - 📡 Eclaw-Server（中转调度）"
+echo "  ./client/       - 🤖 Claw-Client（远程执行）"
+echo ""
+echo "🚀 启动方式："
+echo "  npm start            # 仅启动 AI 大脑"
+echo "  npm run start:server # 启动中转服务器"
+echo "  npm run start:client # 启动远程客户端"
+echo "  npm run start:all    # 一键启动全部"
+echo ""
+echo "📖 详细文档：cat README.md"
 echo "═══════════════════════════════════════"

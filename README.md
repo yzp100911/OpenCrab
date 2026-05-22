@@ -10,7 +10,7 @@
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                   xCrab-Agent (本仓库)                    │
+│                   xCrab-Agent（本仓库）                    │
 │                                                          │
 │  ┌──────────────────┐    ┌──────────────────┐            │
 │  │  📡 eclaw-server  │    │  🧠 xCrab-Agent  │            │
@@ -83,12 +83,12 @@ cd xCrab-Agent
 npm run install:all
 
 # 方式二：手动分步安装
-npm install                    # xCrab-Agent
-cd server && npm install && cd ..  # eclaw-server
-cd client && npm install && cd ..  # claw-client
+npm install                              # xCrab-Agent（含所有组件依赖）
 ```
 
-> ⚠️ 如果 `better-sqlite3` 编译报错，请安装 **Visual Studio Build Tools**（含 C++ 构建工具），或运行：
+> ⚠️ 所有组件依赖已统一在根 `package.json` 中管理，一次 `npm install` 即可完成。
+>
+> 如果 `better-sqlite3` 编译报错，请安装 **Visual Studio Build Tools**（含 C++ 构建工具），或运行：
 > ```bash
 > npm install better-sqlite3 --force
 > ```
@@ -110,19 +110,18 @@ copy .env.example .env
 
 ### 5️⃣ 启动组件
 
-**启动 AI 对话引擎：**
 ```bash
+# 启动 AI 对话引擎
 npm start
-```
 
-**启动中转调度服务器**（新开一个终端）：
-```bash
-node server/server.js
-```
+# 启动中转调度服务器（新开一个终端）
+npm run start:server
 
-**启动远程执行终端**（新开一个终端）：
-```bash
-node client/index.js
+# 启动远程执行终端（新开一个终端）
+npm run start:client
+
+# 或一键启动全部组件
+npm run start:all
 ```
 
 ---
@@ -162,20 +161,10 @@ cd xCrab-Agent
 ### 3️⃣ 一键安装所有依赖
 
 ```bash
-# 方式一：一键安装
+# 一键安装
 npm run install:all
 # 或 bash install-all.sh
-
-# 方式二：手动分步
-npm install
-cd server && npm install && cd ..
-cd client && npm install && cd ..
 ```
-
-> 如果 `better-sqlite3` 编译报错：
-> ```bash
-> sudo apt-get install -y build-essential python3
-> ```
 
 ### 4️⃣ 配置环境变量
 
@@ -188,13 +177,16 @@ nano .env   # 填写 API 密钥
 
 ```bash
 # 启动 AI 对话引擎
-node index.js
+npm start
 
 # 启动中转调度服务器（新开终端）
-node server/server.js
+npm run start:server
 
 # 启动远程执行终端（新开终端）
-node client/index.js
+npm run start:client
+
+# 或一键启动全部
+npm run start:all
 ```
 
 ### 6️⃣ ★ 设置开机自启（systemd 服务）
@@ -202,24 +194,71 @@ node client/index.js
 **所有组件都提供了 systemd 服务文件：**
 
 ```bash
-# 🧠 xCrab-Agent
-sudo cp xcrab.service /etc/systemd/system/
-# 
-sudo systemctl enable xcrab
-sudo systemctl start xcrab
+# 🧠 xCrab-Agent systemd 服务
+sudo tee /etc/systemd/system/xcrab-agent.service > /dev/null << 'EOF'
+[Unit]
+Description=xCrab-Agent AI Engine
+After=network.target
 
-# 📡 eclaw-server
-# 暂无服务文件，手动启动: /etc/systemd/system/
-# node server/server.js &
-# 
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/xCrab-Agent
+ExecStart=/usr/bin/node /path/to/xCrab-Agent/index.js
+Restart=always
+RestartSec=5
 
-# 🤖 claw-client
-sudo cp client/cclaw.service /etc/systemd/system/
-sudo systemctl enable cclaw
-sudo systemctl start cclaw
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 📡 eclaw-server systemd 服务
+sudo tee /etc/systemd/system/eclaw-server.service > /dev/null << 'EOF'
+[Unit]
+Description=Eclaw-Server (Message Relay)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/xCrab-Agent/server
+ExecStart=/usr/bin/node /path/to/xCrab-Agent/server/server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 🤖 claw-client systemd 服务
+sudo tee /etc/systemd/system/claw-client.service > /dev/null << 'EOF'
+[Unit]
+Description=Claw-Client (Remote Terminal)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/path/to/xCrab-Agent/client
+ExecStart=/usr/bin/node /path/to/xCrab-Agent/client/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 重新加载并启动
+sudo systemctl daemon-reload
+sudo systemctl enable xcrab-agent
+sudo systemctl enable eclaw-server
+sudo systemctl enable claw-client
+sudo systemctl start xcrab-agent
+sudo systemctl start eclaw-server
+sudo systemctl start claw-client
 ```
 
-> ⚠️ 记得修改 `.service` 文件中的 `WorkingDirectory` 和 `ExecStart` 路径为你的实际部署路径。
+> ⚠️ 记得将 `/path/to/xCrab-Agent` 替换为你的实际部署路径。
 
 ---
 
@@ -265,10 +304,11 @@ sudo systemctl start cclaw
 ```
 xCrab-Agent/
 ├── index.js                   # 🧠 AI 入口文件
-├── package.json               # 根依赖配置
+├── package.json               # 统一依赖管理（含所有组件）
 ├── .env                       # 环境变量（从 .env.example 复制）
 ├── .env.example               # 环境变量模板
 ├── install-all.sh             # 一键安装脚本（Linux）
+├── LICENSE                    # MIT 许可证
 │
 ├── src/                       # 🧠 AI 核心源码
 │   ├── cli.js                 # 命令行交互
@@ -283,9 +323,9 @@ xCrab-Agent/
 ├── skills/                    # 🧠 技能模块
 ├── tests/                     # 🧠 测试文件
 │
-├── server/                     # 📡 中转调度服务器
+├── server/                    # 📡 eclaw-server（中转调度服务器）
 │   ├── server.js              # 主服务器入口
-│   ├── package.json           # 依赖配置（CommonJS）
+│   ├── package.json           # 独立依赖配置（CommondJS）
 │   ├── cloud-sync.js          # 云同步
 │   ├── wclaw/                 # 网页前端
 │   │   ├── index.html         # 主页面
@@ -295,22 +335,22 @@ xCrab-Agent/
 │   │   ├── app-main.js        # 主逻辑
 │   │   ├── styles.css         # 样式
 │   │   └── icon/              # 图标
-│   └── README.md              # 部署说明
+│   └── README.md              # 详细部署说明
 │
-├── client/                     # 🤖 远程执行终端
+├── client/                    # 🤖 claw-client（远程执行终端）
 │   ├── index.js               # 终端入口
-│   ├── package.json           # 依赖配置（CommonJS）
+│   ├── package.json           # 独立依赖配置（CommonJS）
 │   ├── status-monitor.js      # 状态监控
-│   ├── send_hello.py          # 发送问候
 │   ├── start.sh               # 启动脚本
-│   ├── .playwright-cli/       # Playwright CLI
-│   └── README.md              # 部署说明
+│   └── README.md              # 详细部署说明
 │
-├── xcrab.service              # 🧠 AI systemd 服务文件
-├── server/server.js (手动启动)        # 📡 中转 systemd 服务文件（如存在）
-├── client/cclaw.service        # 🤖 终端 systemd 服务文件
+├── data/                      # 🧠 AI 运行时数据
+├── uploads/                   # 📡 文件上传目录
+├── memory/                    # 🧠 持久化记忆
 │
-├── uploads/                   # 文件上传目录
+├── xcrab.service              # 🧠 AI systemd 服务模板
+├── client/cclaw.service       # 🤖 终端 systemd 服务模板
+│
 └── README.md                  # 本文件（中英文）
 ```
 
