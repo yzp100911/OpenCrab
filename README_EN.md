@@ -353,6 +353,112 @@ xCrab-Agent/
 
 ---
 
+
+
+## 🗄️ MySQL Database Setup (Required for eclaw-server)
+
+eclaw-server requires MySQL to store user accounts, favorites, chat history, and feedback.
+
+### Step 1: Install MySQL
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install mysql-server -y
+sudo systemctl start mysql
+sudo systemctl enable mysql
+```
+
+**CentOS:**
+```bash
+sudo yum install mysql-server -y
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+```
+
+**Windows:**
+Download from [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/) and follow the installer wizard.
+
+### Step 2: Create Database
+
+```bash
+sudo mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+### Step 3: Create Database User (Recommended)
+
+```bash
+sudo mysql -u root -p -e "CREATE USER 'wclaw'@'localhost' IDENTIFIED BY 'your_password';"
+sudo mysql -u root -p -e "GRANT ALL PRIVILEGES ON wclaw_db.* TO 'wclaw'@'localhost';"
+sudo mysql -u root -p -e "FLUSH PRIVILEGES;"
+```
+
+### Step 4: Configure Environment Variables
+
+Add to your `.env` file (copy from `.env.example`):
+
+```bash
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root          # or the user you created
+DB_PASS=your_password # your MySQL password
+DB_NAME=wclaw_db
+```
+
+> **Note:** The server will automatically create the required tables on first startup. No manual table creation needed.
+
+---
+
+## 📋 Deployment Sequence
+
+Start the components **in order**:
+
+### 1️⃣ Start xCrab-Agent (AI Engine)
+```bash
+npm start
+```
+The AI engine listens on port 3000 by default. Verify: `curl http://localhost:3000/api/current_model`
+
+### 2️⃣ Start eclaw-server (Relay Dispatch)
+```bash
+npm run start:server
+```
+The relay server provides:
+- Web UI at http://localhost:10090
+- WebSocket endpoint at ws://localhost:10090/ws
+- User registration & login
+- Message relay between web and terminal
+
+### 3️⃣ Start claw-client (Execution Terminal)
+```bash
+npm run start:client
+```
+The terminal connects to eclaw-server via WebSocket and waits for commands.
+
+### All-in-one:
+```bash
+npm run start:all     # Start all three components sequentially
+```
+
+---
+
+## 🔒 Security Notes (Public Repository)
+
+This repository is **public**. Do NOT commit sensitive information:
+
+1. **`server.js` lines 1-6**: Before pushing to GitHub, clear the values (keep line structure):
+   ```javascript
+   process.env.DB_USER = process.env.DB_USER || '';
+   process.env.DB_PASS = process.env.DB_PASS || '';
+   // ... same for other lines
+   ```
+
+2. **`.env` file**: Already protected by .gitignore, but double-check before committing.
+
+3. **API Keys**: Never hardcode API keys in source files.
+
+---
+
 ## 🔧 Troubleshooting
 
 | Problem | Solution |
@@ -392,55 +498,6 @@ pm2 start ecosystem.config.cjs
 pm2 save  # Save process list
 pm2 startup  # Enable auto-start on boot
 ```
-
-### MySQL Database Setup (Required for eclaw-server)
-
-eclaw-server requires MySQL to store user accounts, favorites, chat history, and feedback.
-
-#### Step 1: Install MySQL
-
-**Ubuntu/Debian:**
-```bash
-sudo apt update
-sudo apt install mysql-server -y
-sudo systemctl start mysql
-sudo systemctl enable mysql
-```
-
-**CentOS:**
-```bash
-sudo yum install mysql-server -y
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-```
-
-#### Step 2: Create Database
-
-```bash
-sudo mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
-
-#### Step 3: Create Database User (Optional but Recommended)
-
-```bash
-sudo mysql -u root -p -e "CREATE USER 'wclaw'@'localhost' IDENTIFIED BY 'your_strong_password';"
-sudo mysql -u root -p -e "GRANT ALL PRIVILEGES ON wclaw_db.* TO 'wclaw'@'localhost';"
-sudo mysql -u root -p -e "FLUSH PRIVILEGES;"
-```
-
-#### Step 4: Configure Environment Variables
-
-Create a `.env` file (copy from `.env.example`) and set:
-
-```bash
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root          # or the user you created
-DB_PASS=yourpassword  # your MySQL password
-DB_NAME=wclaw_db
-```
-
-**Note:** The server will automatically create the required tables on first startup.
 
 ---
 
