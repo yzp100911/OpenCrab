@@ -1,5 +1,7 @@
 [🇨🇳 中文](README.md) | [🇬🇧 English]
 
+> ⚠️ **Attention!!!** If you find it troublesome, just ask AI to deploy it for you.
+
 # xCrab-Agent 🦀
 
 **xCrab** — The all-in-one AI personal assistant family, integrating the AI dialogue engine (xCrab-Agent), relay dispatch server (eclaw-server), and remote execution terminal (claw-client). **Download one repo, deploy everything.**

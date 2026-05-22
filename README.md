@@ -1,5 +1,7 @@
 [🇨🇳 中文] | [🇬🇧 English](README_EN.md)
 
+> ⚠️ **注意！！！** 你实在嫌麻烦的话，叫ai帮你部署就行了。
+
 # xCrab-Agent 🦀
 
 **xCrab** — AI 个人助手全家桶，集成了 AI 对话引擎（xCrab-Agent）、中转调度服务器（eclaw-server）和远程执行终端（claw-client）。**下载一个仓库，即可完整部署。**
