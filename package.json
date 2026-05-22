@@ -1,10 +1,18 @@
 {
-  "name": "xcrab",
+  "name": "xcrab-agent",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "🦀 xCrab - AI 个人助手全家桶（含中转服务器 + 远程执行终端）",
   "main": "index.js",
+=======
+  "description": "🦀 xCrab-Agent - 完整部署包 | AI 大脑 + 中转服务器 + 远程客户端",
+>>>>>>> 14b740a (🎉 合并 eclaw-server 和 claw-client 到 xCrab-Agent 仓库)
   "type": "module",
   "scripts": {
+    "start:agent": "node index.js",
+    "start:server": "node server/server.js",
+    "start:client": "node client/index.js",
+    "start:all": "node index.js & node server/server.js & node client/index.js",
     "start": "node index.js",
     "test": "node --test tests/*.test.js",
     "install:all": "bash install-all.sh",

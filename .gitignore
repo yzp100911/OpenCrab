@@ -7,6 +7,7 @@ auth.json
 *.token
 *.secret
 
+<<<<<<< HEAD
 # But track .env.example files
 !.env.example
 
@@ -27,16 +28,47 @@ memories/
 data/
 mcp-servers/
 
+=======
+>>>>>>> 14b740a (🎉 合并 eclaw-server 和 claw-client 到 xCrab-Agent 仓库)
 # Node
 node_modules/
 
 # Logs
 *.log
 
-# Playwright
+# Database files (runtime)
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+
+# Runtime data (generated, not tracked)
+memory/
+memories/
+mcp-servers/
+canvases/
+client/data/
+server/uploads/
 .playwright-cli/
 .playwright-mcp/
 
+<<<<<<< HEAD
 # OS
+=======
+# Images (generated)
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Backups
+*.bak
+*.bak2
+*.bak3
+*.bak4
+*.bak5
+
+# System
+>>>>>>> 14b740a (🎉 合并 eclaw-server 和 claw-client 到 xCrab-Agent 仓库)
 .DS_Store
 Thumbs.db
