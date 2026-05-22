@@ -2,7 +2,7 @@
 # 每30秒发送"你好"，最多3次
 COUNTER_FILE="/tmp/hello_cron_counter.json"
 MAX_COUNT=3
-ENDPOINT="http://xunrf.cn:10090/api/cron_deliver"
+ENDPOINT="http://localhost:10090/api/cron_deliver"
 USERNAME="unknown"
 
 if [ -f "$COUNTER_FILE" ]; then

@@ -26,7 +26,7 @@ const JWT_SECRET = 'your-super-secret-key-for-eclaw';
 
 // xCrab Gateway 配置
 const XCRAB_API_URL = process.env.XCRAB_API_URL || 'http://localhost:3000';
-const XCRAB_TOKEN = process.env.XCRAB_TOKEN || '100911yzpYZP@';
+const XCRAB_TOKEN = process.env.XCRAB_TOKEN || '';
 
 // 配置 MySQL 连接池（通过 SSH 隧道连接到云服务器）
 const pool = mysql.createPool(getCloudDbConfig());
@@ -200,8 +200,8 @@ app.post('/api/send_sms', (req, res) => {
     console.log(`\n[开发测试] 手机号 ${phone} 的验证码是: ${code} (5分钟内有效)\n`);
 
     const smsapi = "api.smsbao.com";
-    const user = process.env.SMSBAO_USER || "yzp100911";
-    const password = process.env.SMSBAO_PASSWORD || "100911yzpYZP";
+    const user = process.env.SMSBAO_USER || "YOUR_SMSBAO_USER";
+    const password = process.env.SMSBAO_PASSWORD || "YOUR_SMSBAO_PASS";
 
     // 检查是否还在使用默认的占位符（避免用户没改全）
     if (user === "YOUR_SMSBAO_USER") {
@@ -1944,6 +1944,6 @@ wss.on('connection', (ws, req) => {
 const PORT = 10001;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`eclaw 中间件服务启动成功！`);
-    console.log(`wclaw 网页地址: http://xunrf.cn:${PORT}`);
-    console.log(`WebSocket 地址: ws://xunrf.cn:${PORT}/ws`);
+    console.log(`wclaw 网页地址: http://localhost:${PORT}`);
+    console.log(`WebSocket 地址: ws://localhost:${PORT}/ws`);
 });

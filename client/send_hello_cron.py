@@ -7,7 +7,7 @@ import os
 COUNTER_FILE = "/tmp/hello_cron_counter.json"
 MAX_COUNT = 3
 MESSAGE = "你好"
-ENDPOINT = "http://xunrf.cn:10090/api/cron_deliver"
+ENDPOINT = "http://localhost:10090/api/cron_deliver"
 USERNAME = "unknown"
 
 def read_counter():
