@@ -1,13 +1,13 @@
 # xCrab-Agent 🦀
 
-**xCrab** — A mini AI personal assistant, a multi-model AI gateway powered by MiniMax and DeepSeek, supporting tool calling, browser automation, and skill extensions.
+**xCrab** — A compact AI personal assistant, a multi-model AI gateway powered by MiniMax and DeepSeek, supporting tool calling, browser automation, and skill extensions.
 
 ---
 
 ## 📦 System Architecture
 
 ```
-  xCrab-Agent (This Repo)          eclaw-server               claw-client
+  xCrab-Agent (This Repo)       eclaw-server              claw-client
   ┌─────────────────┐     ┌──────────────────┐     ┌──────────────────┐
   │  🧠 AI Brain     │     │  📡 Relay Server  │     │  🤖 Execution    │
   │  Dialogue Engine │◄───►│  Forwarding cmds  │◄───►│  Run commands on │
@@ -29,7 +29,7 @@
 | Environment | Requirement | Notes |
 |-------------|-------------|-------|
 | **Node.js** | **v22.12 or higher** | Must be 22.12+, recommend v22.x LTS |
-| **npm** | Included with Node.js | No additional installation needed |
+| **npm** | Bundled with Node.js | No additional installation needed |
 | **OS** | Windows 10+ / Ubuntu 20.04+ | Tested |
 
 ---
@@ -41,7 +41,7 @@
 **Method 1 (Recommended): Download from official website**
 - Visit [https://nodejs.org](https://nodejs.org) and download **v22.x LTS**
 - Run the installer with default options (check "Add to PATH")
-- Open **Command Prompt (cmd)** or **PowerShell** and verify:
+- Open **Command Prompt (cmd)** or **PowerShell**, verify:
 
 ```bash
 node -v    # Should show v22.x.x
@@ -67,7 +67,7 @@ cd xCrab-Agent
 npm install
 ```
 
-> ⚠️ **Windows Build Note**: If `better-sqlite3` fails to compile, make sure you have:
+> ⚠️ **Windows Build Note**: If `better-sqlite3` fails to compile, ensure you have:
 > - **Visual Studio Build Tools** (with C++ build tools)
 > - Or use pre-built version: `npm install --build-from-source`
 > - Or try: `npm install better-sqlite3 --force`
@@ -100,7 +100,7 @@ Or directly:
 node index.js
 ```
 
-You'll see the following output on success:
+Successful startup output:
 ```
   🦀 xCrab v2.0.0
   Model: MiniMax-M2.7
@@ -236,37 +236,41 @@ xCrab-Agent/
 ├── index.js              # Entry point (use this to start)
 ├── package.json          # Dependencies config
 ├── .env                  # Environment config (copy from .env.example)
-├── .env.example          # Environment template
+├── .env.example          # Environment variable template
 │
 ├── src/                  # Core source code
-│   ├── config.js         # Configuration loader
+│   ├── config.js         # Config loader
 │   ├── llm.js            # LLM invocation
 │   ├── tools.js          # Tool function registry
-│   ├── cli.js            # CLI interaction
-│   ├── skill-manager.js  # Skill manager
-│   │
-│   ├── gateway/          # HTTP API gateway
-│   │   └── server.js
-│   ├── memory/           # SQLite memory system
-│   │   └── store.js
-│   ├── mcp/              # MCP protocol client
-│   │   └── client.js
-│   ├── stats/            # Statistics tracking
-│   │   ├── tracker.js
-│   │   └── quota-tracker.js
-│   ├── workspace/        # Workspace management
-│   │   └── manager.js
-│   └── hooks/            # Lifecycle hooks
-│       └── registry.js
+│   ├── cli.js            # Command-line interaction
+│   └── skill-manager.js  # Skill manager
+│
+├── gateway/              # HTTP API Gateway
+│   └── server.js
+│
+├── memory/               # SQLite memory system
+│   └── store.js
+│
+├── mcp/                  # MCP protocol client
+│   └── client.js
+│
+├── stats/                # Statistics tracking
+│   ├── tracker.js
+│   └── quota-tracker.js
+│
+├── workspace/            # Workspace management
+│   └── manager.js
+│
+├── hooks/                # Lifecycle hooks
+│   └── registry.js
 │
 ├── skills/               # Skill modules (installed from marketplace)
-├── tools/                # Tool functions directory
+├── tools/                # Tool function directory
 ├── tests/                # Test files
 ├── data/                 # Workspace data directory
-├── mcp-servers/          # MCP servers directory
-│
+├── mcp-servers/          # MCP server directory
 ├── xcrab.service         # Linux systemd service file
-└── README.md             # Chinese documentation
+└── README.md             # This file
 ```
 
 ---
@@ -277,12 +281,12 @@ xCrab-Agent/
 
 | Problem | Solution |
 |---------|----------|
-| `MINIMAX_API_KEY` not configured | Check if you copied `.env.example` to `.env` and filled in the key |
-| `better-sqlite3` installation fails | Install `build-essential` (Linux) or Visual Studio Build Tools (Windows) |
+| `MINIMAX_API_KEY` not configured | Check that `.env.example` has been copied to `.env` and the key is filled in |
+| `better-sqlite3` install failure | Install `build-essential` (Linux) or Visual Studio Build Tools (Windows) |
 | Port already in use | Change `GATEWAY_PORT` in `.env` or close the program using the port |
 | Module not found | Run `npm install` to reinstall dependencies |
 
-### Getting API Keys
+### Get API Keys
 
 - **MiniMax API**: Register at [https://platform.minimaxi.com](https://platform.minimaxi.com)
 - **DeepSeek API** (optional): Register at [https://platform.deepseek.com](https://platform.deepseek.com)
