@@ -1,35 +1,11 @@
 # Secrets
 .env
-.env.local
-.env.production
-.env.development
+.env.*
+!.env.example
 auth.json
 *.token
 *.secret
 
-<<<<<<< HEAD
-# But track .env.example files
-!.env.example
-
-# Database / Memories
-memory/
-memories/
-*.db
-*.db-wal
-*.db-shm
-
-# Images
-*.png
-*.jpg
-*.jpeg
-*.gif
-
-# Data
-data/
-mcp-servers/
-
-=======
->>>>>>> 14b740a (🎉 合并 eclaw-server 和 claw-client 到 xCrab-Agent 仓库)
 # Node
 node_modules/
 
@@ -42,7 +18,7 @@ node_modules/
 *.db-shm
 *.db-journal
 
-# Runtime data (generated, not tracked)
+# Runtime data (generated)
 memory/
 memories/
 mcp-servers/
@@ -52,9 +28,6 @@ server/uploads/
 .playwright-cli/
 .playwright-mcp/
 
-<<<<<<< HEAD
-# OS
-=======
 # Images (generated)
 *.png
 *.jpg
@@ -68,7 +41,6 @@ server/uploads/
 *.bak4
 *.bak5
 
-# System
->>>>>>> 14b740a (🎉 合并 eclaw-server 和 claw-client 到 xCrab-Agent 仓库)
+# OS
 .DS_Store
 Thumbs.db

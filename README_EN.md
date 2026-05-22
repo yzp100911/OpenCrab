@@ -35,8 +35,8 @@
 | Component | Path | Description |
 |-----------|------|-------------|
 | 🧠 **xCrab-Agent** | Root `./` | AI dialogue engine, connects to MiniMax/DeepSeek, supports tool calling & skill extensions |
-| 📡 **eclaw-server** | [`./eclaw/`](./eclaw) | Relay dispatch server, manages WebSocket connections, user auth, file service, web frontend |
-| 🤖 **claw-client** | [`./cclaw/`](./cclaw) | Remote execution terminal, connects to eclaw via WebSocket, runs commands on target servers |
+| 📡 **eclaw-server** | [`./server/`](./server/) | Relay dispatch server, manages WebSocket connections, user auth, file service, web frontend |
+| 🤖 **claw-client** | [`./client/`](./client/) | Remote execution terminal, connects to eclaw via WebSocket, runs commands on target servers |
 
 ---
 
@@ -84,8 +84,8 @@ npm run install:all
 
 # Option 2: Manual step-by-step
 npm install                        # xCrab-Agent
-cd eclaw && npm install && cd ..   # eclaw-server
-cd cclaw && npm install && cd ..   # claw-client
+cd server && npm install && cd ..   # eclaw-server
+cd client && npm install && cd ..   # claw-client
 ```
 
 > ⚠️ If `better-sqlite3` fails to compile, install **Visual Studio Build Tools** (with C++ tools), or run:
@@ -117,12 +117,12 @@ npm start
 
 **Start Relay Server** (new terminal):
 ```bash
-npm run start:eclaw
+node server/server.js
 ```
 
 **Start Execution Terminal** (new terminal):
 ```bash
-npm run start:cclaw
+node client/index.js
 ```
 
 ---
@@ -168,8 +168,8 @@ npm run install:all
 
 # Option 2: Manual
 npm install
-cd eclaw && npm install && cd ..
-cd cclaw && npm install && cd ..
+cd server && npm install && cd ..
+cd client && npm install && cd ..
 ```
 
 > If `better-sqlite3` fails:
@@ -191,10 +191,10 @@ nano .env   # Fill in API keys
 node index.js
 
 # Start Relay Server (new terminal)
-node eclaw/server.js
+node server/server.js
 
 # Start Execution Terminal (new terminal)
-node cclaw/index.js
+node client/index.js
 ```
 
 ### 6️⃣ ★ Auto-start with systemd
@@ -204,17 +204,17 @@ node cclaw/index.js
 ```bash
 # 🧠 xCrab-Agent
 sudo cp xcrab.service /etc/systemd/system/
-sudo systemctl daemon-reload
+# 
 sudo systemctl enable xcrab
 sudo systemctl start xcrab
 
 # 📡 eclaw-server
-sudo cp eclaw/eclaw.service /etc/systemd/system/
-sudo systemctl enable eclaw
-sudo systemctl start eclaw
+# 暂无服务文件，手动启动: /etc/systemd/system/
+# node server/server.js &
+# 
 
 # 🤖 claw-client
-sudo cp cclaw/cclaw.service /etc/systemd/system/
+sudo cp client/cclaw.service /etc/systemd/system/
 sudo systemctl enable cclaw
 sudo systemctl start cclaw
 ```
@@ -283,7 +283,7 @@ xCrab-Agent/
 ├── skills/                    # 🧠 Skill modules
 ├── tests/                     # 🧠 Test files
 │
-├── eclaw/                     # 📡 Relay dispatch server
+├── server/                     # 📡 Relay dispatch server
 │   ├── server.js              # Main server entry
 │   ├── package.json           # Dependencies (CommonJS)
 │   ├── cloud-sync.js          # Cloud sync
@@ -297,7 +297,7 @@ xCrab-Agent/
 │   │   └── icon/              # Icons
 │   └── README.md              # Deployment docs
 │
-├── cclaw/                     # 🤖 Remote execution terminal
+├── client/                     # 🤖 Remote execution terminal
 │   ├── index.js               # Terminal entry
 │   ├── package.json           # Dependencies (CommonJS)
 │   ├── status-monitor.js      # Status monitor
@@ -307,8 +307,8 @@ xCrab-Agent/
 │   └── README.md              # Deployment docs
 │
 ├── xcrab.service              # 🧠 AI systemd service file
-├── eclaw/eclaw.service        # 📡 Relay systemd service file
-├── cclaw/cclaw.service        # 🤖 Terminal systemd service file
+├── server/server.js (手动启动)        # 📡 Relay systemd service file
+├── client/cclaw.service        # 🤖 Terminal systemd service file
 │
 ├── uploads/                   # File upload directory
 └── README.md                  # This file (CN/EN)
