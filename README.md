@@ -358,6 +358,112 @@ xCrab-Agent/
 
 ---
 
+
+
+## 🗄️ MySQL 数据库配置（eclaw-server 必需）
+
+eclaw-server 需要 MySQL 存储用户账号、收藏、聊天记录和反馈。
+
+### 第1步：安装 MySQL
+
+**Ubuntu/Debian：**
+```bash
+sudo apt update
+sudo apt install mysql-server -y
+sudo systemctl start mysql
+sudo systemctl enable mysql
+```
+
+**CentOS：**
+```bash
+sudo yum install mysql-server -y
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+```
+
+**Windows：**
+从 [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/) 下载安装包，按向导安装即可。
+
+### 第2步：创建数据库
+
+```bash
+sudo mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+### 第3步：创建数据库用户（推荐）
+
+```bash
+sudo mysql -u root -p -e "CREATE USER 'wclaw'@'localhost' IDENTIFIED BY 'your_password';"
+sudo mysql -u root -p -e "GRANT ALL PRIVILEGES ON wclaw_db.* TO 'wclaw'@'localhost';"
+sudo mysql -u root -p -e "FLUSH PRIVILEGES;"
+```
+
+### 第4步：配置环境变量
+
+在 `.env` 文件中添加（从 `.env.example` 复制）：
+
+```bash
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USER=root          # 或你刚创建的用户
+DB_PASS=your_password # 你的 MySQL 密码
+DB_NAME=wclaw_db
+```
+
+> **说明：** 首次启动时会自动创建所需的数据库表，无需手动建表。
+
+---
+
+## 📋 启动顺序
+
+请**按以下顺序**启动各组件：
+
+### 1️⃣ 启动 xCrab-Agent（AI 对话引擎）
+```bash
+npm start
+```
+AI 引擎默认监听 3000 端口。验证：`curl http://localhost:3000/api/current_model`
+
+### 2️⃣ 启动 eclaw-server（中转调度服务器）
+```bash
+npm run start:server
+```
+中转服务器提供：
+- 网页端界面 http://localhost:10090
+- WebSocket 端点 ws://localhost:10090/ws
+- 用户注册和登录
+- 网页端与终端之间的消息转发
+
+### 3️⃣ 启动 claw-client（远程执行终端）
+```bash
+npm run start:client
+```
+终端通过 WebSocket 连接 eclaw-server，等待接收执行命令。
+
+### 一键启动：
+```bash
+npm run start:all     # 按顺序启动全部三个组件
+```
+
+---
+
+## 🔒 安全提示（公开仓库注意事项）
+
+本仓库是**公开**的，切勿将敏感信息提交到 GitHub：
+
+1. **`server.js` 顶部 6 行**：推送前需清空值（保留行结构）：
+   ```javascript
+   process.env.DB_USER = process.env.DB_USER || '';
+   process.env.DB_PASS = process.env.DB_PASS || '';
+   // ... 其他行同理
+   ```
+
+2. **`.env` 文件**：已在 .gitignore 中保护，但提交前请再次确认。
+
+3. **API 密钥**：切勿在源代码中硬编码 API 密钥。
+
+---
+
 ## 🔧 故障排除
 
 | 问题 | 解决方案 |
