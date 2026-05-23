@@ -481,7 +481,7 @@ MIT
 
 ---
 
-## �独立的声明
+## 📌 Independent Statement
 
 OpenCrab is a **multi-model AI gateway** independently developed and maintained by the open-source community. It is a separate project from **OpenClaw** (openclaw.ai) and has no organizational, technical, or marketing affiliation with the OpenClaw team.
 
