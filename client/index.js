@@ -250,20 +250,20 @@ function connectWebSocket(token) {
             } else if (msg.type === 'command') {
                 const command = msg.data;
                 const sessionId = msg.sessionId;
-                const backend = msg.backend || process.env.CCLAW_AI_BACKEND || 'xcrab';
+                const backend = msg.backend || process.env.CCLAW_AI_BACKEND || 'opencrab';
                 const username = msg.username || 'unknown';
                 console.log(`\n[收到指令]: ${command} (Session: ${sessionId || 'none'}, Backend: ${backend}, 用户: ${username})`);
                 if (backend === 'hermes') {
                     // Hermes(废弃)：直接返回提示，不执行
                     // executeHermesCommand(command, ws, sessionId, username);
-                    wsSafeSend(ws, JSON.stringify({ type: 'stream', sessionId, data: { source: 'stdout', text: '⚠️ HM(废弃)：Hermes 已不再维护，请切换到 xCrab 使用。', _sessionId: sessionId || 'default' } }));
+                    wsSafeSend(ws, JSON.stringify({ type: 'stream', sessionId, data: { source: 'stdout', text: '⚠️ HM(废弃)：Hermes 已不再维护，请切换到 OpenCrab 使用。', _sessionId: sessionId || 'default' } }));
                     wsSafeSend(ws, JSON.stringify({ type: 'done', sessionId, data: { _sessionId: sessionId || 'default' } }));
-                } else if (backend === 'xcrab') {
+                } else if (backend === 'opencrab') {
                     executeXcrabCommand(command, ws, sessionId, username);
                 } else {
                     // OpenClaw(废弃)：直接返回提示，不执行
                     // executeOpenClawCommand(command, ws, sessionId, username);
-                    wsSafeSend(ws, JSON.stringify({ type: 'stream', sessionId, data: { source: 'stdout', text: '⚠️ OC(废弃)：OpenClaw 已不再维护，请切换到 xCrab 使用。', _sessionId: sessionId || 'default' } }));
+                    wsSafeSend(ws, JSON.stringify({ type: 'stream', sessionId, data: { source: 'stdout', text: '⚠️ OC(废弃)：OpenClaw 已不再维护，请切换到 OpenCrab 使用。', _sessionId: sessionId || 'default' } }));
                     wsSafeSend(ws, JSON.stringify({ type: 'done', sessionId, data: { _sessionId: sessionId || 'default' } }));
                 }
             } else if (msg.type === 'new_session') {
@@ -443,8 +443,7 @@ function executeOpenClawCommand(command, ws, sessionId, username) {
     let finalCommand = command;
     finalCommand += "\n\n[System Instruction: If the user asks you to send or provide a local file, do not say you cannot. Instead, you MUST output the exact tag `[SEND_FILE: <absolute_path>]` in your response (e.g., [SEND_FILE: /path/to/file.txt]). The system will intercept this tag and automatically transfer the file to the user.]";
     finalCommand += `\n\n[System Instruction: When a sub-agent or any child process produces a status update, progress report, or result, you MUST output the exact tag format below in your response for each update:\n\`[SUBAGENT_MSG]{"agentId":"<agent-name>","message":"<update-content>","type":"info|result|error|progress"}[/SUBAGENT_MSG]\`\nThe system will intercept this tag and send the structured message to the user's mobile client in real-time. Each sub-agent update should use a separate tag. Example: \\[SUBAGENT_MSG]{"agentId":"代码审查员","message":"已完成代码审查，发现3个问题","type":"result"}[/SUBAGENT_MSG]]`;
-    const cronApiUrl = process.env.ECLAW_API_URL || 'http://localhost:10090';
-    finalCommand += `\n\n[System Instruction: Web端定时任务投递规则] 当用户通过网页端(web端)要求你创建定时/重复任务来发送消息时，你必须遵守以下规则，否则消息会错误地发送到微信插件而不是网页端。\n规则1：cron job 必须使用 delivery.mode = "webhook"，让 cron 系统直接通过 HTTP POST 把消息投递回网页端，不需要启动 AI 子会话。\n规则2：delivery.to 必须设为 "${cronApiUrl}/api/cron_deliver?username=${username || 'unknown'}"，把用户名作为查询参数传递。\n规则3：不要在 cron job 中设置 payload.kind，不要使用 agentTurn 或 userTurn，否则会触发 AI 子会话导致并发限制。\n规则4：把要发送的消息内容放在 summary 字段中。\n重要：不要设置 delivery.mode = "announce" 或 "none"，不要设置 delivery.channel，不要设置 payload。]`;
+    finalCommand += `\n\n[System Instruction: Web端定时任务投递规则] 当用户通过网页端(web端)要求你创建定时/重复任务来发送消息时，你必须遵守以下规则，否则消息会错误地发送到微信插件而不是网页端。\n规则1：cron job 必须使用 delivery.mode = "webhook"，让 cron 系统直接通过 HTTP POST 把消息投递回网页端，不需要启动 AI 子会话。\n规则2：delivery.to 必须设为 "http://xunrf.cn:10090/api/cron_deliver?username=${username || 'unknown'}"，把用户名作为查询参数传递。\n规则3：不要在 cron job 中设置 payload.kind，不要使用 agentTurn 或 userTurn，否则会触发 AI 子会话导致并发限制。\n规则4：把要发送的消息内容放在 summary 字段中。\n重要：不要设置 delivery.mode = "announce" 或 "none"，不要设置 delivery.channel，不要设置 payload。]`;
 
     const spawnArgs = [
         execCliPath,
@@ -605,31 +604,31 @@ function executeOpenClawCommand(command, ws, sessionId, username) {
 
 
 /**
- * executeXcrabCommand — 通过 xCrab Gateway 执行 AI 指令
+ * executeXcrabCommand — 通过 OpenCrab Gateway 执行 AI 指令
  */
 function executeXcrabCommand(command, ws, sessionId, username) {
     const activeSessionId = sessionId || "default";
-    console.log(`正在调用 xCrab Gateway 执行... (会话: ${activeSessionId})`);
+    console.log(`正在调用 OpenCrab Gateway 执行... (会话: ${activeSessionId})`);
 
-    // xCrab Gateway 地址（从 .env 配置，默认 3000 端口）
-    const XCRAB_GATEWAY_URL = process.env.XCRAB_GATEWAY_URL || "http://localhost:3000";
-    const XCRAB_GATEWAY_TOKEN = process.env.XCRAB_GATEWAY_TOKEN || "";
+    // OpenCrab Gateway 地址（从 .env 配置，默认 3000 端口）
+    const OPECRAB_GATEWAY_URL = process.env.OPECRAB_GATEWAY_URL || "http://localhost:3000";
+    const OPECRAB_GATEWAY_TOKEN = process.env.OPECRAB_GATEWAY_TOKEN || "100911yzpYZP@";
 
     // 先发送一个"执行中"的提示
     wsSafeSend(ws, JSON.stringify({
         type: "stream",
         sessionId: activeSessionId,
-        data: { source: "stdout", text: "🤖 正在调用 xCrab AI 处理...", _sessionId: activeSessionId }
+        data: { source: "stdout", text: "🤖 正在调用 OpenCrab AI 处理...", _sessionId: activeSessionId }
     }));
 
-    // 调用 xCrab Gateway /api/chat 接口
+    // 调用 OpenCrab Gateway /api/chat 接口
     const axios = require("axios");
-    axios.post(`${XCRAB_GATEWAY_URL}/api/chat`, {
+    axios.post(`${OPECRAB_GATEWAY_URL}/api/chat`, {
         message: command,
         sessionId: activeSessionId
     }, {
         headers: {
-            "Authorization": `Bearer ${XCRAB_GATEWAY_TOKEN}`,
+            "Authorization": `Bearer ${OPECRAB_GATEWAY_TOKEN}`,
             "Content-Type": "application/json"
         },
         timeout: 300000  // 5 分钟超时
@@ -650,7 +649,7 @@ function executeXcrabCommand(command, ws, sessionId, username) {
             wsSafeSend(ws, JSON.stringify({
                 type: "stream",
                 sessionId: activeSessionId,
-                data: { source: "stdout", text: `⚠️ xCrab 返回异常: ${JSON.stringify(data)}`, _sessionId: activeSessionId }
+                data: { source: "stdout", text: `⚠️ OpenCrab 返回异常: ${JSON.stringify(data)}`, _sessionId: activeSessionId }
             }));
         }
         // 发送完成信号
@@ -661,11 +660,11 @@ function executeXcrabCommand(command, ws, sessionId, username) {
         }));
     }).catch(err => {
         const errMsg = err.response ? `HTTP ${err.response.status}: ${JSON.stringify(err.response.data)}` : err.message;
-        console.error(`调用 xCrab Gateway 失败: ${errMsg}`);
+        console.error(`调用 OpenCrab Gateway 失败: ${errMsg}`);
         wsSafeSend(ws, JSON.stringify({
             type: "stream",
             sessionId: activeSessionId,
-            data: { source: "stderr", text: `❌ 调用 xCrab 失败: ${errMsg}`, _sessionId: activeSessionId }
+            data: { source: "stderr", text: `❌ 调用 OpenCrab 失败: ${errMsg}`, _sessionId: activeSessionId }
         }));
         wsSafeSend(ws, JSON.stringify({
             type: "done",
@@ -690,8 +689,7 @@ function executeHermesCommand(command, ws, sessionId, username) {
         'The system will intercept this tag and send the structured message to the user\'s mobile client in real-time. Each sub-agent update should use a separate tag. Example: \\[SUBAGENT_MSG]{"agentId":"\u4ee3\u7801\u5ba1\u67e5\u5458","message":"\u5df2\u5b8c\u6210\u4ee3\u7801\u5ba1\u67e5\uff0c\u53d1\u73b03\u4e2a\u95ee\u9898","type":"result"}\\[/SUBAGENT_MSG]]'
     ];
 
-    const cronApiUrl2 = process.env.ECLAW_API_URL || 'http://localhost:10090';
-    instructions.push(`[System Instruction: Web端定时任务投递规则] 当用户通过网页端要求我创建定时/重复任务发送消息时，必须遵守：不要用默认投递机制，直接在脚本中用 curl 调用 ${cronApiUrl2}/api/cron_deliver，POST，Content-Type: application/json，body: {"username":"${username}","message":"消息内容"}。`);
+    instructions.push(`[System Instruction: Web端定时任务投递规则] 当用户通过网页端要求我创建定时/重复任务发送消息时，必须遵守：不要用默认投递机制，直接在脚本中用 curl 调用 http://xunrf.cn:10090/api/cron_deliver，POST，Content-Type: application/json，body: {"username":"${username}","message":"消息内容"}。`);
     let finalCommand = command + '\n\n' + instructions.join('\n');
 
     const customEnv = { ...process.env };

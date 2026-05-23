@@ -1,4 +1,4 @@
-    var currentBackend = localStorage.getItem('wclaw_backend') || 'xcrab';
+    var currentBackend = localStorage.getItem('wclaw_backend') || 'opencrab';
 
     // 诊断：AndroidSMS 接口检测
     (function() {
@@ -53,9 +53,9 @@
     var sidebarHidden = false;
 
     function updateHeaderBackend() {
-        const labelMap = { hermes: 'HM(废弃)', xcrab: 'xCrab', openclaw: 'OC(废弃)' };
+        const labelMap = { hermes: 'HM(废弃)', opencrab: 'OpenCrab', openclaw: 'OC(废弃)' };
         const label = labelMap[currentBackend] || 'OpenClaw';
-        const isXcrab = currentBackend === 'xcrab';
+        const isXcrab = currentBackend === 'opencrab';
 
         // 更新头部标题
         const headerLabel = document.getElementById('header-backend-label');
@@ -63,13 +63,13 @@
 
         // 更新头部机器人图标
         const headerIcon = document.getElementById('header-icon');
-        const headerIconXcrab = document.getElementById('header-icon-xcrab');
+        const headerIconXcrab = document.getElementById('header-icon-opencrab');
         if (headerIcon && headerIconXcrab) {
             if (isXcrab) {
                 headerIcon.style.display = 'none';
                 headerIconXcrab.style.display = 'inline';
             } else {
-                // OC(废弃)+HM(废弃)：旧图标逻辑已废弃，统一显示 xCrab 图标
+                // OC(废弃)+HM(废弃)：旧图标逻辑已废弃，统一显示 OpenCrab 图标
                 headerIcon.style.display = 'none';
                 headerIconXcrab.style.display = 'inline';
                 // 旧逻辑保留供参考：
@@ -90,13 +90,13 @@
         const toggleLabel = document.querySelector('.toggle-agent-label');
         if (toggleLabel) toggleLabel.textContent = ' ' + label;
         const dropdownIcon = document.getElementById('dropdown-icon');
-        const dropdownIconXcrab = document.getElementById('dropdown-icon-xcrab');
+        const dropdownIconXcrab = document.getElementById('dropdown-icon-opencrab');
         if (dropdownIcon && dropdownIconXcrab) {
             if (isXcrab) {
                 dropdownIcon.style.display = 'none';
                 dropdownIconXcrab.style.display = 'inline';
             } else {
-                // OC(废弃)+HM(废弃)：旧图标逻辑已废弃，统一显示 xCrab 图标
+                // OC(废弃)+HM(废弃)：旧图标逻辑已废弃，统一显示 OpenCrab 图标
                 dropdownIcon.style.display = 'none';
                 dropdownIconXcrab.style.display = 'inline';
                 // 旧逻辑保留供参考：
@@ -110,8 +110,8 @@
     async function fetchCurrentModel() {
         if (!currentToken) return;
         try {
-            // xCrab 后端走 xCrab 的 API
-            const apiEndpoint = currentBackend === 'xcrab' ? '/api/xcrab/current_model' : '/api/current_model';
+            // OpenCrab 后端走 OpenCrab 的 API
+            const apiEndpoint = currentBackend === 'opencrab' ? '/api/opencrab/current_model' : '/api/current_model';
             const res = await fetch(host + apiEndpoint, {
                 headers: { 'Authorization': 'Bearer ' + currentToken }
             });
@@ -145,8 +145,8 @@
             return;
         }
 
-        // 三个平台循环：openclaw -> hermes -> xcrab -> openclaw
-        const next = { openclaw: 'hermes', hermes: 'xcrab', xcrab: 'openclaw' };
+        // 三个平台循环：openclaw -> hermes -> opencrab -> openclaw
+        const next = { openclaw: 'hermes', hermes: 'opencrab', opencrab: 'openclaw' };
         currentBackend = next[currentBackend] || 'openclaw';
         localStorage.setItem('wclaw_backend', currentBackend);
         // 保存到当前会话
@@ -156,7 +156,7 @@
             saveSessions();
         }
         updateHeaderBackend();
-        const labelMap = { hermes: 'HM(废弃)', xcrab: 'xCrab', openclaw: 'OC(废弃)' };
+        const labelMap = { hermes: 'HM(废弃)', opencrab: 'OpenCrab', openclaw: 'OC(废弃)' };
         showToast('info', '已切换到 ' + (labelMap[currentBackend] || 'OpenClaw'));
     }
 
@@ -500,7 +500,7 @@
         sessionState.reconnectAttempts = 0;
         resetSendBtn();
         // 隐藏工具状态条
-        var _toolBar = document.getElementById('xcrab-tool-bar');
+        var _toolBar = document.getElementById('opencrab-tool-bar');
         if (_toolBar) { _toolBar.classList.remove('fade-in'); _toolBar.style.display = 'none'; }
 
         if (sessionState.msgId) {
@@ -529,7 +529,7 @@
         }
 
         try {
-            const stopEndpoint = currentBackend === 'xcrab' ? '/api/xcrab/stop' : '/api/stop';
+            const stopEndpoint = currentBackend === 'opencrab' ? '/api/opencrab/stop' : '/api/stop';
             await fetch(host + stopEndpoint, {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + currentToken }
@@ -549,8 +549,8 @@
         // 强制恢复按钮和状态栏
         resetSendBtn();
 
-        // 清除 xCrab 卡顿警告条
-        var _stallWarn = document.getElementById('xcrab-stall-warning');
+        // 清除 OpenCrab 卡顿警告条
+        var _stallWarn = document.getElementById('opencrab-stall-warning');
         if (_stallWarn) _stallWarn.remove();
     }
 
@@ -1106,8 +1106,8 @@
                 const errorClass = msg.status === 'error' ? 'error' : '';
                 const safeContent = encodeURIComponent(msg.content).replace(/'/g, "%27");
                 const streamingIndicator = msg.status === 'streaming' ? '<span class="loading-dots"></span>' : '';
-                const historyBackend = msg.backend || 'xcrab';
-                const historyBadge = historyBackend === 'hermes' ? 'HM(废弃)' : historyBackend === 'xcrab' ? 'xCrab' : historyBackend === 'cron' ? '定时' : 'OC(废弃)';
+                const historyBackend = msg.backend || 'opencrab';
+                const historyBadge = historyBackend === 'hermes' ? 'HM(废弃)' : historyBackend === 'opencrab' ? 'OpenCrab' : historyBackend === 'cron' ? '定时' : 'OC(废弃)';
                 box.insertAdjacentHTML('beforeend', `
                     <div class="msg-row ai ${errorClass}" id="row-${msg.id}" style="flex-direction: row; align-items: center; justify-content: flex-start; width: 100%;">
                         ${checkboxHtml}
@@ -1548,7 +1548,7 @@
         window._userStoppedSession = null;
         sessionState.isExecuting = true;
         // 清除之前的工具状态条
-        var _toolBar = document.getElementById('xcrab-tool-bar');
+        var _toolBar = document.getElementById('opencrab-tool-bar');
         if (_toolBar) { _toolBar.classList.remove('fade-in'); _toolBar.style.display = 'none'; }
         // 立即更新工具栏状态，不依赖 SSE 通知
         updateRemoteToolbarStatus(true);
@@ -1619,7 +1619,7 @@
         `);
 
         const replyMsgId = `reply-${msgId}`;
-        const backendBadge = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'xcrab' ? 'xCrab' : 'OpenClaw';
+        const backendBadge = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'opencrab' ? 'OpenCrab' : 'OpenClaw';
         box.insertAdjacentHTML('beforeend', `
             <div class="msg-row ai" id="row-${replyMsgId}" style="flex-direction: row; align-items: center; justify-content: flex-start; width: 100%;">
                 <input type="checkbox" class="batch-checkbox" value="${replyMsgId}" style="display:none; margin-right: 10px; width: 18px; height: 18px; cursor: pointer;" onchange="updateBatchCount()">
@@ -1647,9 +1647,9 @@
         // 这样可以避免服务端收到 cclaw 消息时网页端还没建立连接的问题
         startSSE(msgId, activeSessionId);
 
-        // 如果当前是 xCrab 后端，加载历史消息作为上下文
+        // 如果当前是 OpenCrab 后端，加载历史消息作为上下文
         let historyMessages = null;
-        if (currentBackend === 'xcrab' && currentUser) {
+        if (currentBackend === 'opencrab' && currentUser) {
             const historyKey = 'wclaw_history_' + currentUser + '_' + activeSessionId;
             try {
                 const stored = localStorage.getItem(historyKey);
@@ -1659,7 +1659,7 @@
                     const recentHistory = allHistory.filter(m => m.id !== msgId).slice(-20);
                     historyMessages = recentHistory.map(m => {
                         let content = typeof m.content === 'string' ? m.content : '';
-                        // 过滤 AI 消息中的思考标签和 Exit 后缀，避免传给 xCrab 干扰后续推理
+                        // 过滤 AI 消息中的思考标签和 Exit 后缀，避免传给 OpenCrab 干扰后续推理
                         if (m.role === 'ai') {
                             content = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
                             content = content.replace(/\s*Exit\s*$/, '');
@@ -1671,14 +1671,14 @@
                     }).filter(m => m.content);
                 }
             } catch(e) {
-                console.warn('[xcrab] 读取历史消息失败:', e);
+                console.warn('[opencrab] 读取历史消息失败:', e);
             }
         }
 
         try {
-            const apiEndpoint = currentBackend === 'xcrab' ? '/api/xcrab/send' : '/api/command';
+            const apiEndpoint = currentBackend === 'opencrab' ? '/api/opencrab/send' : '/api/command';
             const requestBody = { command: finalCmd, sessionId: activeSessionId, backend: currentBackend };
-            if (currentBackend === 'xcrab' && historyMessages) {
+            if (currentBackend === 'opencrab' && historyMessages) {
                 requestBody.messages = historyMessages;
             }
             const res = await fetch(host + apiEndpoint, {
@@ -1832,7 +1832,7 @@ ${cmd}` : cmd;
                 
                 // 等待电脑端回复
                 const replyMsgId = `reply-${msgId}`;
-                const fileBackendBadge = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'xcrab' ? 'xCrab' : 'OpenClaw';
+                const fileBackendBadge = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'opencrab' ? 'OpenCrab' : 'OpenClaw';
                 box.insertAdjacentHTML('beforeend', `
                     <div class="msg-row ai" id="row-${replyMsgId}" style="flex-direction: row; align-items: center; justify-content: flex-start; width: 100%;">
                         <input type="checkbox" class="batch-checkbox" value="${replyMsgId}" style="display:none; margin-right: 10px; width: 18px; height: 18px; cursor: pointer;" onchange="updateBatchCount()">
@@ -2045,12 +2045,12 @@ ${cmd}` : cmd;
             sessionState.thinkContent = '';
         }
         sessionState.streamSavedMsgId = `reply-${msgId}`;
-        sessionState.xcrabLastDataTime = Date.now();  // 客户端空闲检测基准时间
+        sessionState.opencrabLastDataTime = Date.now();  // 客户端空闲检测基准时间
 
         // 客户端侧空闲检测：每 5 秒检查一次是否长时间未收到数据（适用于所有后端）
         if (sessionState._idleCheckInterval) clearInterval(sessionState._idleCheckInterval);
         sessionState._idleCheckInterval = setInterval(function() {
-            var _idleSec = Math.floor((Date.now() - (sessionState.xcrabLastDataTime || Date.now())) / 1000);
+            var _idleSec = Math.floor((Date.now() - (sessionState.opencrabLastDataTime || Date.now())) / 1000);
             if (_idleSec < 15) return;  // 少于 15s 不显示
 
             var _sBar = document.getElementById('status-bar');
@@ -2064,15 +2064,15 @@ ${cmd}` : cmd;
                 return;
             }
 
-            var backendName = currentBackend === 'xcrab' ? 'xCrab' : currentBackend === 'hermes' ? 'Hermes' : 'OpenClaw';
+            var backendName = currentBackend === 'opencrab' ? 'OpenCrab' : currentBackend === 'hermes' ? 'Hermes' : 'OpenClaw';
             _sBar.style.display = 'flex';
 
             if (_idleSec >= 60) {
                 // 客户端侧卡顿检测（所有后端）
-                var _warnEl = document.getElementById('xcrab-stall-warning');
+                var _warnEl = document.getElementById('opencrab-stall-warning');
                 if (!_warnEl) {
                     _warnEl = document.createElement('div');
-                    _warnEl.id = 'xcrab-stall-warning';
+                    _warnEl.id = 'opencrab-stall-warning';
                     _warnEl.style.cssText = 'position:fixed;top:60px;left:0;right:0;z-index:1000;background:#fff3cd;color:#856404;text-align:center;padding:8px 16px;font-size:13px;border-bottom:1px solid #ffeeba;';
                     document.body.insertBefore(_warnEl, document.body.firstChild);
                 }
@@ -2132,7 +2132,7 @@ ${cmd}` : cmd;
 
                 // 空闲心跳重置：收到有效数据时恢复状态栏显示（适用于所有后端）
                 function resetXcrabIdle() {
-                    if (sessionState) sessionState.xcrabLastDataTime = Date.now();
+                    if (sessionState) sessionState.opencrabLastDataTime = Date.now();
                     var _sb = document.getElementById('status-bar');
                     if (_sb) {
                         var _st = _sb.querySelector('.status-text');
@@ -2242,8 +2242,8 @@ ${cmd}` : cmd;
                         if (_dots) _dots.remove();
                     }
                     // 更新输入框上方的工具状态条
-                    var _toolBar = document.getElementById('xcrab-tool-bar');
-                    var _toolInner = document.getElementById('xcrab-tool-bar-inner');
+                    var _toolBar = document.getElementById('opencrab-tool-bar');
+                    var _toolInner = document.getElementById('opencrab-tool-bar-inner');
                     if (_toolBar && _toolInner) {
                         _toolBar.style.display = 'block';
                         // 触发渐入动画
@@ -2293,7 +2293,7 @@ ${cmd}` : cmd;
                 } else if (data.type === 'tool_progress') {
                     resetXcrabIdle();
                     var _elapsed = data.data && data.data.elapsed;
-                    var _toolInner = document.getElementById('xcrab-tool-bar-inner');
+                    var _toolInner = document.getElementById('opencrab-tool-bar-inner');
                     if (_toolInner) {
                         var _elapsedEl = _toolInner.querySelector('.tool-elapsed');
                         if (_elapsedEl) _elapsedEl.textContent = '⏱ ' + _elapsed + 's';
@@ -2303,7 +2303,7 @@ ${cmd}` : cmd;
                     var _resultName = data.data && data.data.name;
                     var _dur = data.data && data.data.durationMs;
                     var _fmtTime = _dur >= 1000 ? (_dur/1000).toFixed(1) + 's' : _dur + 'ms';
-                    var _toolInner = document.getElementById('xcrab-tool-bar-inner');
+                    var _toolInner = document.getElementById('opencrab-tool-bar-inner');
                     if (_toolInner) {
                         _toolInner.style.cssText = 'padding:7px 10px;background:#e8f5e9;border-radius:6px;font-size:13px;border:1px solid #c8e6c9;';
                         var _savedInfo = _toolInner.getAttribute('data-tool-info') || '';
@@ -2368,7 +2368,7 @@ ${cmd}` : cmd;
                     if (sessionState.reconnectTimer) clearTimeout(sessionState.reconnectTimer);
                     sessionState.reconnectAttempts = 0;
                     sessionState.sseCompleted = true;
-                    // 清理空闲检测定时器，防止结束后重新弹出"xCrab 思考中"
+                    // 清理空闲检测定时器，防止结束后重新弹出"OpenCrab 思考中"
                     if (sessionState._idleCheckInterval) {
                         clearInterval(sessionState._idleCheckInterval);
                         sessionState._idleCheckInterval = null;
@@ -2386,13 +2386,13 @@ ${cmd}` : cmd;
                     }
                     resetSendBtn(sessionId);
                     // 清除卡顿警告横幅（空闲检测定时器虽已清除，但横幅可能已在前端显示）
-                    var _stallWarn = document.getElementById('xcrab-stall-warning');
+                    var _stallWarn = document.getElementById('opencrab-stall-warning');
                     if (_stallWarn) _stallWarn.remove();
                     // 隐藏状态栏
                     var _statusBar = document.getElementById('status-bar');
                     if (_statusBar) _statusBar.style.display = 'none';
                     // 隐藏工具状态条
-                    var _toolBar = document.getElementById('xcrab-tool-bar');
+                    var _toolBar = document.getElementById('opencrab-tool-bar');
                     if (_toolBar) { _toolBar.classList.remove('fade-in'); _toolBar.style.display = 'none'; }
                     updateRemoteToolbarStatus(false);
                     showExecutionTime(msgId, sessionId);
@@ -2439,7 +2439,7 @@ ${cmd}` : cmd;
                     const doneDate = new Date().toLocaleDateString('zh-CN', {year: 'numeric', month: '2-digit', day: '2-digit'}).replace(/\//g, '-');
                     const doneFullTime = `${doneDate} ${doneTime}`;
                     const doneSafeContent = encodeURIComponent(finalText).replace(/'/g, '%27');
-                    const doneBackendLabel = (sessionState.currentBackend || currentBackend) === 'hermes' ? 'Hermes' : (sessionState.currentBackend || currentBackend) === 'xcrab' ? 'xCrab' : 'OpenClaw';
+                    const doneBackendLabel = (sessionState.currentBackend || currentBackend) === 'hermes' ? 'Hermes' : (sessionState.currentBackend || currentBackend) === 'opencrab' ? 'OpenCrab' : 'OpenClaw';
                     const doneBackendBadge = sessionState.currentBackend || currentBackend;
                     const doneTimeRow = document.querySelector('#row-' + replyMsgId + ' .msg-time');
                     if (doneTimeRow) {
@@ -2483,7 +2483,7 @@ ${cmd}` : cmd;
                         } catch(e) {}
                     }
                 } else if (data.type === 'heartbeat') {
-                    // 空闲心跳：显示距离上次收到 xCrab 数据的时间
+                    // 空闲心跳：显示距离上次收到 OpenCrab 数据的时间
                     // 如果会话已结束，忽略心跳避免覆盖 done 的清理
                     if (!sessionState.isExecuting) return;
                     var _statusBarH = document.getElementById('status-bar');
@@ -2491,22 +2491,22 @@ ${cmd}` : cmd;
                         _statusBarH.style.display = 'flex';
                         var _statusTextH = _statusBarH.querySelector('.status-text');
                         if (_statusTextH) {
-                            _statusTextH.innerHTML = '⏳ xCrab 思考中（无响应 ' + data.idleSeconds + 's）<span id="status-timer">...</span>';
+                            _statusTextH.innerHTML = '⏳ OpenCrab 思考中（无响应 ' + data.idleSeconds + 's）<span id="status-timer">...</span>';
                         }
                     }
                 } else if (data.type === 'stall_warning') {
                     // 卡顿警告：在页面顶部显示黄色警告条
-                    var _warnEl = document.getElementById('xcrab-stall-warning');
+                    var _warnEl = document.getElementById('opencrab-stall-warning');
                     if (!_warnEl) {
                         _warnEl = document.createElement('div');
-                        _warnEl.id = 'xcrab-stall-warning';
+                        _warnEl.id = 'opencrab-stall-warning';
                         _warnEl.style.cssText = 'position:fixed;top:60px;left:0;right:0;z-index:1000;background:#fff3cd;color:#856404;text-align:center;padding:8px 16px;font-size:13px;border-bottom:1px solid #ffeeba;';
                         document.body.insertBefore(_warnEl, document.body.firstChild);
                     }
-                    _warnEl.innerHTML = '⚠️ ' + escapeHtml(data.message || 'xCrab 可能卡顿');
+                    _warnEl.innerHTML = '⚠️ ' + escapeHtml(data.message || 'OpenCrab 可能卡顿');
                 } else if (data.type === 'stall_resolved') {
                     // 卡顿恢复：移除警告，状态栏恢复正常
-                    var _warnElR = document.getElementById('xcrab-stall-warning');
+                    var _warnElR = document.getElementById('opencrab-stall-warning');
                     if (_warnElR) _warnElR.remove();
                     var _statusBarR = document.getElementById('status-bar');
                     if (_statusBarR) {
@@ -2678,7 +2678,7 @@ ${cmd}` : cmd;
 
         // AI 占位消息
         const replyMsgId = `reply-${msgId}`;
-        const backendBadge = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'xcrab' ? 'xCrab' : 'OpenClaw';
+        const backendBadge = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'opencrab' ? 'OpenCrab' : 'OpenClaw';
         box.insertAdjacentHTML('beforeend', `
             <div class="msg-row ai" id="row-${replyMsgId}" style="flex-direction: row; align-items: center; justify-content: flex-start; width: 100%;">
                 <input type="checkbox" class="batch-checkbox" value="${replyMsgId}" style="display:none; margin-right: 10px; width: 18px; height: 18px; cursor: pointer;" onchange="updateBatchCount()">
@@ -2732,7 +2732,7 @@ ${cmd}` : cmd;
         const safeContent = encodeURIComponent(finalContent).replace(/'/g, "%27");
         
         const existingTime = rowEl.querySelector('.msg-time');
-        const backendLabel = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'xcrab' ? 'xCrab' : 'OpenClaw';
+        const backendLabel = currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'opencrab' ? 'OpenCrab' : 'OpenClaw';
         const backendHtml = `<span class="backend-badge ${currentBackend}">${backendLabel}</span>`;
         if (existingTime) {
             existingTime.innerHTML = `${backendHtml}<img id="play-btn-${replyMsgId}" class="btn-action" src="icon/play.png" title="播放语音" style="cursor:pointer; display:inline;" onclick="handlePlayClick('${replyMsgId}', '${safeContent}', this)">
@@ -2795,7 +2795,7 @@ ${cmd}` : cmd;
             const fullTime = `${date} ${time}`;
             const safeContent = encodeURIComponent(errorMsg).replace(/'/g, "%27");
             const existingTime = rowEl.querySelector('.msg-time');
-            const errorBackendHtml = `<span class="backend-badge ${currentBackend}">${currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'xcrab' ? 'xCrab' : 'OpenClaw'}</span>`;
+            const errorBackendHtml = `<span class="backend-badge ${currentBackend}">${currentBackend === 'hermes' ? 'Hermes' : currentBackend === 'opencrab' ? 'OpenCrab' : 'OpenClaw'}</span>`;
             if (existingTime) {
                 existingTime.innerHTML = `${errorBackendHtml}<img id="play-btn-${replyMsgId}" class="btn-action" src="icon/play.png" title="播放语音" style="cursor:pointer; display:inline;" onclick="handlePlayClick('${replyMsgId}', '${safeContent}', this)">
                     <i class="fa-solid fa-quote-left btn-action quote-btn" title="引用" onclick="quoteMessage('${replyMsgId}', '${safeContent}', 'ai')"></i>
@@ -2847,13 +2847,13 @@ ${cmd}` : cmd;
         closeSwitchModel();
 
         const modelName = model === 'deepseek' ? 'deepseek-v4-flash' : 'MiniMax-M2.7';
-        if (!confirm(`确定要切换至 ${modelName} 吗？\n\n切换过程中将:\n1. 更新本地配置\n2. 同步到云服务器\n3. 重启云服务器 ${currentBackend === 'xcrab' ? 'xCrab' : 'cclaw'} 服务\n\n请确认操作。`)) return;
+        if (!confirm(`确定要切换至 ${modelName} 吗？\n\n切换过程中将:\n1. 更新本地配置\n2. 同步到云服务器\n3. 重启云服务器 ${currentBackend === 'opencrab' ? 'OpenCrab' : 'cclaw'} 服务\n\n请确认操作。`)) return;
 
         showAlert('info', `正在切换至 ${modelName}，请稍候...`);
 
         try {
-            // xCrab 后端走 xCrab 的切换 API，否则走 cclaw 的
-            const apiEndpoint = currentBackend === 'xcrab' ? '/api/xcrab/switch_model' : '/api/switch_model';
+            // OpenCrab 后端走 OpenCrab 的切换 API，否则走 cclaw 的
+            const apiEndpoint = currentBackend === 'opencrab' ? '/api/opencrab/switch_model' : '/api/switch_model';
             const res = await fetch(host + apiEndpoint, {
                 method: 'POST',
                 headers: {

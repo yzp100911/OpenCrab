@@ -1,5 +1,5 @@
 /**
- * xCrab 配额追踪器
+ * OpenCrab 配额追踪器
  * 监控 MiniMax MCP 工具（web_search / understand_image）的调用配额
  * MiniMax 限制：60次/5小时/每工具
  */

@@ -1,5 +1,5 @@
 /**
- * xCrab SQLite 底层存储封装
+ * OpenCrab SQLite 底层存储封装
  * 提供同步数据库操作接口
  */
 

@@ -1,5 +1,5 @@
 /**
- * xCrab 统计数据存储
+ * OpenCrab 统计数据存储
  * 使用 SQLite 记录 Token 用量、工具调用、响应时间等
  */
 

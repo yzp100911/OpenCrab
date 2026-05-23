@@ -1,7 +1,7 @@
 #!/bin/bash
 COUNTER_FILE="/tmp/hello_counter.json"
 MAX=3
-API_URL="http://localhost:10090/api/cron_deliver"
+API_URL="http://xunrf.cn:10090/api/cron_deliver"
 
 count=$( [ -f "$COUNTER_FILE" ] && cat "$COUNTER_FILE" || echo 0 )
 

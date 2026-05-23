@@ -1,8 +1,8 @@
 # 📡 eclaw-server
 
-> **Merged into [xCrab-Agent](https://github.com/yzp100911/xCrab-Agent) repository**
+> **Merged into [OpenCrab](https://github.com/yzp100911/OpenCrab) repository**
 >
-> Now located at [`server/`](https://github.com/yzp100911/xCrab-Agent/tree/main/server) directory
+> Now located at [`server/`](https://github.com/yzp100911/OpenCrab/tree/main/server) directory
 
 ---
 
@@ -10,6 +10,6 @@
 
 | Original Repo | New Location |
 |---------------|:------------:|
-| `eclaw-server` (this repo) | [`xCrab-Agent/server/`](https://github.com/yzp100911/xCrab-Agent/tree/main/server) |
+| `eclaw-server` (this repo) | [`OpenCrab/server/`](https://github.com/yzp100911/OpenCrab/tree/main/server) |
 
-Please visit the **[xCrab-Agent](https://github.com/yzp100911/xCrab-Agent)** repository for the complete source code and deployment instructions.
+Please visit the **[OpenCrab](https://github.com/yzp100911/OpenCrab)** repository for the complete source code and deployment instructions.

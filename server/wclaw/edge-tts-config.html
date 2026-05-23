@@ -221,7 +221,7 @@
 
         <div class="scroll-area">
             <form id="tts-form">
-                <input type="hidden" id="tts-api-url" value="http://localhost:5000">
+                <input type="hidden" id="tts-api-url" value="http://119.29.196.58:5000">
 
                 <div class="form-group">
                     <label>选择语音</label>
@@ -518,7 +518,7 @@
         // ====== 功能函数 ======
         function loadSettings() {
             var s = JSON.parse(localStorage.getItem('wclaw_tts_settings') || '{}');
-            document.getElementById('tts-api-url').value = s.apiUrl || 'http://localhost:5000';
+            document.getElementById('tts-api-url').value = s.apiUrl || 'http://119.29.196.58:5000';
             document.getElementById('tts-rate').value = s.rateValue !== undefined ? s.rateValue : 0;
             document.getElementById('tts-volume').value = s.volumeValue !== undefined ? s.volumeValue : 0;
             document.getElementById('tts-pitch').value = s.pitchValue !== undefined ? s.pitchValue : 0;

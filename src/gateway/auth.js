@@ -1,5 +1,5 @@
 /**
- * xCrab Gateway JWT 认证中间件
+ * OpenCrab Gateway JWT 认证中间件
  */
 
 import jwt from 'jsonwebtoken';

@@ -7,7 +7,7 @@ from pathlib import Path
 
 COUNTER_FILE = Path("/tmp/hello_counter.json")
 MAX_SENDS = 3
-API_URL = "http://localhost:10090/api/cron_deliver"
+API_URL = "http://xunrf.cn:10090/api/cron_deliver"
 
 def main():
     # Read or initialize counter

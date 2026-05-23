@@ -1,5 +1,5 @@
 /**
- * xCrab Gateway Web 前端 - 基础函数
+ * OpenCrab Gateway Web 前端 - 基础函数
  */
 
 function escapeHtml(unsafe) {
@@ -40,14 +40,14 @@ function genId() {
 
 // 获取 token
 function getToken() {
-  return localStorage.getItem('xcrab_token') || '';
+  return localStorage.getItem('opencrab_token') || '';
 }
 
 // 保存 token
 function saveToken() {
   const input = document.getElementById('token-input');
   if (input) {
-    localStorage.setItem('xcrab_token', input.value.trim());
+    localStorage.setItem('opencrab_token', input.value.trim());
     showToast('success', '令牌已保存');
   }
 }

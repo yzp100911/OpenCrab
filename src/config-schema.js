@@ -1,5 +1,5 @@
 /**
- * xCrab 配置校验 schema
+ * OpenCrab 配置校验 schema
  * 定义所有配置项的类型、默认值、校验规则
  */
 

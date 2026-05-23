@@ -1,5 +1,5 @@
 /**
- * xCrab Gateway HTTP + WebSocket 服务器
+ * OpenCrab Gateway HTTP + WebSocket 服务器
  * 提供 REST API + SSE 流式响应，供 Web 前端连接
  */
 

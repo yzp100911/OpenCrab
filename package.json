@@ -1,7 +1,7 @@
 {
-  "name": "xcrab-agent",
+  "name": "opencrab-agent",
   "version": "1.0.0",
-  "description": "🦀 xCrab - AI 个人助手全家桶 | AI 大脑 + 中转调度服务器 + 远程执行终端",
+  "description": "🦀 OpenCrab - AI 个人助手全家桶 | AI 大脑 + 中转调度服务器 + 远程执行终端",
   "main": "index.js",
   "type": "module",
   "scripts": {

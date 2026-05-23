@@ -1,5 +1,5 @@
 /**
- * xCrab 统计追踪器
+ * OpenCrab 统计追踪器
  * 提供轻量级 API 供 llm.js 和 tools.js 埋点调用
  */
 

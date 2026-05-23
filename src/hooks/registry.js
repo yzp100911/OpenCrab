@@ -1,10 +1,10 @@
 /**
- * xCrab Hook 系统
+ * OpenCrab Hook 系统
  * 在 LLM 调用/工具执行等生命周期节点插入自定义逻辑
  *
  * 支持事件:
- *   onStart    - xCrab 启动时
- *   onExit     - xCrab 退出时
+ *   onStart    - OpenCrab 启动时
+ *   onExit     - OpenCrab 退出时
  *   beforeLLM  - LLM 调用前，可修改 messages
  *   afterLLM   - LLM 调用后，可修改 response
  *   beforeTool - 工具执行前，可修改 args

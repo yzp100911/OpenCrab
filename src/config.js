@@ -96,7 +96,7 @@ export const config = {
   gateway: {
     enabled: cfg.GATEWAY_ENABLED === 'true' || cfg.GATEWAY_ENABLED === '1',
     port: parseInt(cfg.GATEWAY_PORT) || 3000,
-    jwtSecret: cfg.GATEWAY_JWT_SECRET || 'xcrab-gateway-secret',
+    jwtSecret: cfg.GATEWAY_JWT_SECRET || 'opencrab-gateway-secret',
     token: cfg.GATEWAY_TOKEN || '',
   },
 };

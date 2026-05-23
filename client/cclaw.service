@@ -19,8 +19,8 @@ StandardError=journal
 Environment=NODE_ENV=production
 Environment=LOCAL_API_PORT=10091
 # 如需连接远程服务端，取消下面注释:
-# Environment=ECLAW_API_URL=http://localhost:10090
-# Environment=ECLAW_WS_URL=ws://localhost:10090/ws
+# Environment=ECLAW_API_URL=http://xunrf.cn:10090
+# Environment=ECLAW_WS_URL=ws://xunrf.cn:10090/ws
 
 # 限制
 NoNewPrivileges=true

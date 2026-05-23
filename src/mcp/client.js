@@ -44,7 +44,7 @@ export class MCPClient {
     const initResult = await this._request('initialize', {
       protocolVersion: '0.1.0',
       capabilities: {},
-      clientInfo: { name: 'xCrab', version: '2.0.0' },
+      clientInfo: { name: 'OpenCrab', version: '2.0.0' },
     });
 
     this._initialized = true;

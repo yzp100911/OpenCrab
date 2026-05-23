@@ -1,17 +1,17 @@
 /**
- * xCrab Gateway Web 前端 - 主逻辑
+ * OpenCrab Gateway Web 前端 - 主逻辑
  */
 
 const API_BASE = '/api';
-let currentSessionId = localStorage.getItem('xcrab_session') || '';
-let sessions = JSON.parse(localStorage.getItem('xcrab_sessions') || '[]');
+let currentSessionId = localStorage.getItem('opencrab_session') || '';
+let sessions = JSON.parse(localStorage.getItem('opencrab_sessions') || '[]');
 let currentEventSource = null;
 let isExecuting = false;
 
 // 自动补全 sessionId
 if (!currentSessionId) {
   currentSessionId = genId();
-  localStorage.setItem('xcrab_session', currentSessionId);
+  localStorage.setItem('opencrab_session', currentSessionId);
 }
 
 // ========== 初始化 ==========
@@ -46,11 +46,11 @@ function toggleSidebar() {
 
 function newSession() {
   currentSessionId = genId();
-  localStorage.setItem('xcrab_session', currentSessionId);
+  localStorage.setItem('opencrab_session', currentSessionId);
   document.getElementById('chat-box').innerHTML = `
     <div class="welcome">
       <div class="welcome-icon">🦀</div>
-      <div class="welcome-title">xCrab AI 助手</div>
+      <div class="welcome-title">OpenCrab AI 助手</div>
       <div class="welcome-desc">迷你 · 敏捷 · 强大</div>
     </div>`;
   updateStatus('idle');
@@ -63,7 +63,7 @@ function clearChat() {
   document.getElementById('chat-box').innerHTML = `
     <div class="welcome">
       <div class="welcome-icon">🦀</div>
-      <div class="welcome-title">xCrab AI 助手</div>
+      <div class="welcome-title">OpenCrab AI 助手</div>
       <div class="welcome-desc">迷你 · 敏捷 · 强大</div>
     </div>`;
 }
@@ -151,7 +151,7 @@ function connectSSE(sessionId) {
       switch (data.type) {
         case 'session':
           currentSessionId = data.sessionId;
-          localStorage.setItem('xcrab_session', currentSessionId);
+          localStorage.setItem('opencrab_session', currentSessionId);
           break;
 
         case 'stream':
@@ -330,12 +330,12 @@ function saveSession() {
 
   // 最多保存 20 个完整会话
   if (sessions.length > 20) sessions = sessions.slice(-20);
-  localStorage.setItem('xcrab_sessions', JSON.stringify(sessions));
+  localStorage.setItem('opencrab_sessions', JSON.stringify(sessions));
   renderSessions();
 }
 
 function loadSessions() {
-  sessions = JSON.parse(localStorage.getItem('xcrab_sessions') || '[]');
+  sessions = JSON.parse(localStorage.getItem('opencrab_sessions') || '[]');
   renderSessions();
 }
 
@@ -347,7 +347,7 @@ function restoreCurrentSession() {
     chatBox.innerHTML = `
       <div class="welcome">
         <div class="welcome-icon">🦀</div>
-        <div class="welcome-title">xCrab AI 助手</div>
+        <div class="welcome-title">OpenCrab AI 助手</div>
         <div class="welcome-desc">迷你 · 敏捷 · 强大</div>
       </div>`;
     return;
@@ -374,7 +374,7 @@ function renderSessions() {
 
 function switchSession(id) {
   currentSessionId = id;
-  localStorage.setItem('xcrab_session', id);
+  localStorage.setItem('opencrab_session', id);
   restoreCurrentSession();
   renderSessions();
   // 移动端关闭侧边栏

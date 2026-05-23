@@ -1,5 +1,5 @@
 /**
- * xCrab 工具定义与执行
+ * OpenCrab 工具定义与执行
  * 每个工具包含定义 (schema) 和执行函数 (handler)
  */
 
@@ -817,7 +817,7 @@ async function webFetch(args) {
     const fetchOpts = {
       method: args.method || 'GET',
       signal: controller.signal,
-      headers: { 'User-Agent': 'xCrab-AI-Agent/1.0', ...(args.headers || {}) },
+      headers: { 'User-Agent': 'OpenCrab-AI-Agent/1.0', ...(args.headers || {}) },
     };
     if (args.body && (args.method === 'POST' || args.method === 'PUT')) {
       fetchOpts.body = args.body;

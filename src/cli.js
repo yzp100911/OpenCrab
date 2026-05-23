@@ -17,7 +17,7 @@ function estimateTokenCount(text) {
 
 const BANNER = `
   ╔══════════════════════════════════════╗
-  ║       xCrab — AI 助手       ║
+  ║       OpenCrab — AI 助手       ║
   ║    🦀 迷你 · 敏捷 · 强大           ║
   ╚══════════════════════════════════════╝
   输入 /help 查看命令 · /clear 清空对话 · /quit 退出
@@ -204,12 +204,12 @@ export async function startCLI(skillManager) {
     /skills config <n> [k] [v] - 修改技能配置
     /skills rollback <n> - 回滚技能到上一版本
     /skills deps <n>     - 查看技能依赖树
-    /quit             - 退出 xCrab
+    /quit             - 退出 OpenCrab
 
   可用工具:
     ${toolDefinitions.map(t => t.function.name).join(', ')}
 
-  直接输入内容与 xCrab 对话即可。
+  直接输入内容与 OpenCrab 对话即可。
 `);
       continue;
     }

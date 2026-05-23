@@ -18,14 +18,14 @@
                                    │ HTTP             └─────────────────────┘
                                    ▼
                           ┌──────────────────┐
-                          │  🧠 xCrab-Agent  │
+                          │  🧠 OpenCrab-Agent  │
                           │  AI 对话引擎      │
                           └──────────────────┘
 ```
 
 > - **claw-client** = 在目标服务器上执行命令的执行端 ← **本仓库**
 > - **eclaw-server** = 中转调度服务器（claw-client 连接到它接收指令）
-> - **xCrab-Agent** = 提供 AI 对话能力（可选）
+> - **OpenCrab-Agent** = 提供 AI 对话能力（可选）
 
 ---
 
@@ -302,9 +302,9 @@ sudo journalctl -u cclaw -f
 |------|--------|------|------|
 | `ECLAW_API_URL` | `http://127.0.0.1:10090` | ✅ | eclaw-server HTTP API 地址 |
 | `ECLAW_WS_URL` | `ws://127.0.0.1:10090/ws` | ✅ | eclaw-server WebSocket 地址 |
-| `CCLAW_AI_BACKEND` | `xcrab` | ❌ | AI 后端选择（`xcrab` 推荐 / `hermes` 已废弃） |
-| `XCRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | xCrab-Agent 网关地址 |
-| `XCRAB_GATEWAY_TOKEN` | `100911yzpYZP@` | ❌ | xCrab-Agent 网关令牌 |
+| `CCLAW_AI_BACKEND` | `opencrab` | ❌ | AI 后端选择（`opencrab` 推荐 / `hermes` 已废弃） |
+| `OPECRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | OpenCrab-Agent 网关地址 |
+| `OPECRAB_GATEWAY_TOKEN` | `100911yzpYZP@` | ❌ | OpenCrab-Agent 网关令牌 |
 | `LOCAL_API_PORT` | `10091` | ❌ | 本地健康检查 API 端口 |
 | `NODE_ENV` | `production` | ❌ | 运行环境 |
 

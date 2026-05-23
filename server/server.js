@@ -24,9 +24,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const JWT_SECRET = 'your-super-secret-key-for-eclaw';
 
-// xCrab Gateway 配置
-const XCRAB_API_URL = process.env.XCRAB_API_URL || 'http://localhost:3000';
-const XCRAB_TOKEN = process.env.XCRAB_TOKEN || '';
+// OpenCrab Gateway 配置
+const OPECRAB_API_URL = process.env.OPECRAB_API_URL || 'http://localhost:3000';
+const OPECRAB_TOKEN = process.env.OPECRAB_TOKEN || '100911yzpYZP@';
 
 // 配置 MySQL 连接池（通过 SSH 隧道连接到云服务器）
 const pool = mysql.createPool(getCloudDbConfig());
@@ -200,8 +200,8 @@ app.post('/api/send_sms', (req, res) => {
     console.log(`\n[开发测试] 手机号 ${phone} 的验证码是: ${code} (5分钟内有效)\n`);
 
     const smsapi = "api.smsbao.com";
-    const user = process.env.SMSBAO_USER || "YOUR_SMSBAO_USER";
-    const password = process.env.SMSBAO_PASSWORD || "YOUR_SMSBAO_PASS";
+    const user = process.env.SMSBAO_USER || "yzp100911";
+    const password = process.env.SMSBAO_PASSWORD || "100911yzpYZP";
 
     // 检查是否还在使用默认的占位符（避免用户没改全）
     if (user === "YOUR_SMSBAO_USER") {
@@ -1023,13 +1023,13 @@ async function sendToXcrab(command, sessionId, username, messages) {
 
     try {
         const headers = { 'Content-Type': 'application/json' };
-        if (XCRAB_TOKEN) headers['Authorization'] = `Bearer ${XCRAB_TOKEN}`;
+        if (OPECRAB_TOKEN) headers['Authorization'] = `Bearer ${OPECRAB_TOKEN}`;
 
         const body = { message: command, sessionId };
         if (messages && Array.isArray(messages)) {
             body.messages = messages;
         }
-        const resp = await fetch(`${XCRAB_API_URL}/api/chat/stream`, {
+        const resp = await fetch(`${OPECRAB_API_URL}/api/chat/stream`, {
             method: 'POST',
             headers,
             body: JSON.stringify(body),
@@ -1250,11 +1250,11 @@ app.post('/api/xcrab/stop', (req, res) => {
         const username = decoded.username;
 
         // 通知 xCrab 停止
-        fetch(`${XCRAB_API_URL}/api/stop`, {
+        fetch(`${OPECRAB_API_URL}/api/stop`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(XCRAB_TOKEN ? { 'Authorization': `Bearer ${XCRAB_TOKEN}` } : {}),
+                ...(OPECRAB_TOKEN ? { 'Authorization': `Bearer ${OPECRAB_TOKEN}` } : {}),
             },
             body: JSON.stringify({ sessionId: req.body.sessionId || '' }),
         }).catch(() => {});
@@ -1270,8 +1270,8 @@ app.post('/api/xcrab/stop', (req, res) => {
 /** xCrab 获取当前模型 */
 app.get('/api/xcrab/current_model', async (req, res) => {
     try {
-        const resp = await fetch(`${XCRAB_API_URL}/api/current_model`, {
-            headers: XCRAB_TOKEN ? { 'Authorization': `Bearer ${XCRAB_TOKEN}` } : {},
+        const resp = await fetch(`${OPECRAB_API_URL}/api/current_model`, {
+            headers: OPECRAB_TOKEN ? { 'Authorization': `Bearer ${OPECRAB_TOKEN}` } : {},
         });
         const data = await resp.json();
         res.json(data);
@@ -1283,11 +1283,11 @@ app.get('/api/xcrab/current_model', async (req, res) => {
 /** xCrab 切换模型 */
 app.post('/api/xcrab/switch_model', async (req, res) => {
     try {
-        const resp = await fetch(`${XCRAB_API_URL}/api/switch_model`, {
+        const resp = await fetch(`${OPECRAB_API_URL}/api/switch_model`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(XCRAB_TOKEN ? { 'Authorization': `Bearer ${XCRAB_TOKEN}` } : {}),
+                ...(OPECRAB_TOKEN ? { 'Authorization': `Bearer ${OPECRAB_TOKEN}` } : {}),
             },
             body: JSON.stringify(req.body),
         });
@@ -1944,6 +1944,6 @@ wss.on('connection', (ws, req) => {
 const PORT = 10001;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`eclaw 中间件服务启动成功！`);
-    console.log(`wclaw 网页地址: http://localhost:${PORT}`);
-    console.log(`WebSocket 地址: ws://localhost:${PORT}/ws`);
+    console.log(`wclaw 网页地址: http://xunrf.cn:${PORT}`);
+    console.log(`WebSocket 地址: ws://xunrf.cn:${PORT}/ws`);
 });

@@ -8,7 +8,7 @@
 
 ## 功能特性
 
-- **AI 助手客户端** — 基于 xCrab Gateway 的指令执行
+- **AI 助手客户端** — 基于 OpenCrab Gateway 的指令执行
 - **浏览器自动化** — Playwright 驱动，可执行复杂网页操作
 - **WebSocket 通信** — 与 eClaw Server 保持实时连接
 - **后台服务运行** — 支持 systemd 服务配置

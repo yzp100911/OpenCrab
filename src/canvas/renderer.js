@@ -1,5 +1,5 @@
 /**
- * xCrab Canvas 渲染器
+ * OpenCrab Canvas 渲染器
  * AI 生成的图表/可视化数据验证、存储和检索
  */
 

@@ -2,9 +2,9 @@
 
 > ⚠️ **Attention!!!** If you find it troublesome, just ask AI to deploy it for you.
 
-# xCrab-Agent 🦀
+# OpenCrab 🦀
 
-**xCrab** — The all-in-one AI personal assistant family, integrating the AI dialogue engine (xCrab-Agent), relay dispatch server (eclaw-server), and remote execution terminal (claw-client). **Download one repo, deploy everything.**
+**OpenCrab** — The all-in-one AI personal assistant family, integrating the AI dialogue engine (OpenCrab), relay dispatch server (eclaw-server), and remote execution terminal (claw-client). **Download one repo, deploy everything.**
 
 ---
 
@@ -12,10 +12,10 @@
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                   xCrab-Agent (This Repo)                 │
+│                   OpenCrab (This Repo)                   │
 │                                                          │
 │  ┌──────────────────┐    ┌──────────────────┐            │
-│  │  📡 eclaw-server  │    │  🧠 xCrab-Agent  │            │
+│  │  📡 eclaw-server  │    │  🧠 OpenCrab    │            │
 │  │  Relay Server     │◄──►│  AI Engine        │            │
 │  │  User Auth        │    │  MiniMax/DeepSeek │            │
 │  │  Message Relay    │    │  Tool Calling     │            │
@@ -36,7 +36,7 @@
 
 | Component | Path | Description |
 |-----------|------|-------------|
-| 🧠 **xCrab-Agent** | Root `./` | AI dialogue engine, connects to MiniMax/DeepSeek, supports tool calling & skill extensions |
+| 🧠 **OpenCrab** | Root `./` | AI dialogue engine, connects to MiniMax/DeepSeek, supports tool calling & skill extensions |
 | 📡 **eclaw-server** | [`./server/`](./server/) | Relay dispatch server, manages WebSocket connections, user auth, file service, web frontend |
 | 🤖 **claw-client** | [`./client/`](./client/) | Remote execution terminal, connects to eclaw via WebSocket, runs commands on target servers |
 
@@ -74,8 +74,8 @@ npm -v     # Should show 10.x.x
 ### 2️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/yzp100911/xCrab-Agent.git
-cd xCrab-Agent
+git clone https://github.com/yzp100911/OpenCrab.git
+cd OpenCrab
 ```
 
 ### 3️⃣ Install All Dependencies
@@ -156,8 +156,8 @@ npm -v     # Should show 10.x.x
 sudo apt-get install -y git   # Ubuntu
 # sudo yum install -y git     # CentOS
 
-git clone https://github.com/yzp100911/xCrab-Agent.git
-cd xCrab-Agent
+git clone https://github.com/yzp100911/OpenCrab.git
+cd OpenCrab
 ```
 
 ### 3️⃣ Install All Dependencies
@@ -196,17 +196,17 @@ npm run start:all
 **All three components have systemd service templates:**
 
 ```bash
-# 🧠 xCrab-Agent systemd service
-sudo tee /etc/systemd/system/xcrab-agent.service > /dev/null << 'EOF'
+# 🧠 OpenCrab systemd service
+sudo tee /etc/systemd/system/opencrab.service > /dev/null << 'EOF'
 [Unit]
-Description=xCrab-Agent AI Engine
+Description=OpenCrab AI Engine
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/xCrab-Agent
-ExecStart=/usr/bin/node /path/to/xCrab-Agent/index.js
+WorkingDirectory=/path/to/OpenCrab
+ExecStart=/usr/bin/node /path/to/OpenCrab/index.js
 Restart=always
 RestartSec=5
 
@@ -223,8 +223,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/xCrab-Agent/server
-ExecStart=/usr/bin/node /path/to/xCrab-Agent/server/server.js
+WorkingDirectory=/path/to/OpenCrab/server
+ExecStart=/usr/bin/node /path/to/OpenCrab/server/server.js
 Restart=always
 RestartSec=5
 
@@ -241,8 +241,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/xCrab-Agent/client
-ExecStart=/usr/bin/node /path/to/xCrab-Agent/client/index.js
+WorkingDirectory=/path/to/OpenCrab/client
+ExecStart=/usr/bin/node /path/to/OpenCrab/client/index.js
 Restart=always
 RestartSec=5
 
@@ -252,17 +252,17 @@ EOF
 
 # Reload and start
 sudo systemctl daemon-reload
-sudo systemctl enable xcrab-agent eclaw-server claw-client
-sudo systemctl start xcrab-agent eclaw-server claw-client
+sudo systemctl enable opencrab eclaw-server claw-client
+sudo systemctl start opencrab eclaw-server claw-client
 ```
 
-> ⚠️ Replace `/path/to/xCrab-Agent` with your actual deployment path.
+> ⚠️ Replace `/path/to/OpenCrab` with your actual deployment path.
 
 ---
 
 ## ⚙️ Environment Variables Reference
 
-### 🧠 xCrab-Agent Config
+### 🧠 OpenCrab Config
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
@@ -282,8 +282,8 @@ sudo systemctl start xcrab-agent eclaw-server claw-client
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
 | `ECLAW_PORT` | `10090` | ❌ | Server listen port |
-| `XCRAB_API_URL` | `http://localhost:3000` | ❌ | xCrab-Agent gateway URL |
-| `XCRAB_TOKEN` | - | ❌ | Auth token |
+| `OPECRAB_API_URL` | `http://localhost:3000` | ❌ | OpenCrab gateway URL |
+| `OPECRAB_TOKEN` | - | ❌ | Auth token |
 
 ### 🤖 claw-client Config
 
@@ -291,16 +291,16 @@ sudo systemctl start xcrab-agent eclaw-server claw-client
 |----------|---------|----------|-------------|
 | `ECLAW_API_URL` | `http://127.0.0.1:10090` | ✅ | eclaw-server API URL |
 | `ECLAW_WS_URL` | `ws://127.0.0.1:10090/ws` | ✅ | eclaw-server WebSocket URL |
-| `CCLAW_AI_BACKEND` | `xcrab` | ❌ | AI backend (xcrab / hermes) |
-| `XCRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | xCrab-Agent gateway URL |
-| `XCRAB_GATEWAY_TOKEN` | - | ❌ | xCrab-Agent gateway token |
+| `CCLAW_AI_BACKEND` | `opencrab` | ❌ | AI backend (`opencrab` recommended / `hermes` deprecated) |
+| `OPECRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | OpenCrab gateway URL |
+| `OPECRAB_GATEWAY_TOKEN` | - | ❌ | OpenCrab gateway token |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-xCrab-Agent/
+OpenCrab/
 ├── index.js                   # 🧠 AI entry point
 ├── package.json               # Unified dependency management (all components)
 ├── .env                       # Environment config (copy from .env.example)
@@ -346,98 +346,10 @@ xCrab-Agent/
 ├── uploads/                   # 📡 File upload directory
 ├── memory/                    # 🧠 Persistent memory
 │
+├── opencrab.service           # 🧠 AI systemd service template
 ├── client/cclaw.service       # 🤖 Terminal systemd service template
 │
 └── README.md                  # This file (CN/EN)
-```
-
----
-
-
-
-## 🗄️ MySQL Database Setup (Required for eclaw-server)
-
-eclaw-server requires MySQL to store user accounts, favorites, chat history, and feedback.
-
-### Step 1: Install MySQL
-
-**Ubuntu/Debian:**
-```bash
-sudo apt update
-sudo apt install mysql-server -y
-sudo systemctl start mysql
-sudo systemctl enable mysql
-```
-
-**CentOS:**
-```bash
-sudo yum install mysql-server -y
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-```
-
-**Windows:**
-Download from [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/) and follow the installer wizard.
-
-### Step 2: Create Database
-
-```bash
-sudo mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
-
-### Step 3: Create Database User (Recommended)
-
-```bash
-sudo mysql -u root -p -e "CREATE USER 'wclaw'@'localhost' IDENTIFIED BY 'your_password';"
-sudo mysql -u root -p -e "GRANT ALL PRIVILEGES ON wclaw_db.* TO 'wclaw'@'localhost';"
-sudo mysql -u root -p -e "FLUSH PRIVILEGES;"
-```
-
-### Step 4: Configure Environment Variables
-
-Add to your `.env` file (copy from `.env.example`):
-
-```bash
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root          # or the user you created
-DB_PASS=your_password # your MySQL password
-DB_NAME=wclaw_db
-```
-
-> **Note:** The server will automatically create the required tables on first startup. No manual table creation needed.
-
----
-
-## 📋 Deployment Sequence
-
-Start the components **in order**:
-
-### 1️⃣ Start xCrab-Agent (AI Engine)
-```bash
-npm start
-```
-The AI engine listens on port 3000 by default. Verify: `curl http://localhost:3000/api/current_model`
-
-### 2️⃣ Start eclaw-server (Relay Dispatch)
-```bash
-npm run start:server
-```
-The relay server provides:
-- Web UI at http://localhost:10090
-- WebSocket endpoint at ws://localhost:10090/ws
-- User registration & login
-- Message relay between web and terminal
-
-### 3️⃣ Start claw-client (Execution Terminal)
-```bash
-npm run start:client
-```
-The terminal connects to eclaw-server via WebSocket and waits for commands.
-
-### All-in-one:
-```bash
-npm run start:all     # Start all three components sequentially
 ```
 
 ---
@@ -451,38 +363,6 @@ npm run start:all     # Start all three components sequentially
 | Port already in use | Change `GATEWAY_PORT` or `ECLAW_PORT` in `.env` |
 | WebSocket connection failed | Check `ECLAW_WS_URL` address and port |
 | eclaw-server frontend not accessible | Verify `wclaw/` directory exists and static file paths are correct in `server.js` |
-
-### Using PM2 to Manage Processes
-
-After PM2 restarts, it may fail to properly load environment variables from `.env`, causing `[warn] API key not provided, some features may be limited`.
-
-**Solution:** Create an `ecosystem.config.cjs` configuration file to directly specify environment variables:
-
-```javascript
-module.exports = {
-  apps: [{
-    name: 'xCrab-Agent',
-    script: './index.js',
-    instances: 1,
-    autorestart: true,
-    env: {
-      NODE_ENV: 'production',
-      MINIMAX_API_KEY: 'your_complete_api_key',
-      SERVER_PORT: 3000,
-      AUTH_PASSWORD: 'your_auth_password'
-    }
-  }]
-};
-```
-
-Startup commands:
-```bash
-pm2 start ecosystem.config.cjs
-pm2 save  # Save process list
-pm2 startup  # Enable auto-start on boot
-```
-
----
 
 ### Get API Keys
 

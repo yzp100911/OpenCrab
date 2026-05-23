@@ -1,10 +1,10 @@
-[🇨🇳 中文] | [🇬🇧 English](README_EN.md)
+[🇨🇳 中文](README.md) | [🇬🇧 English](README_EN.md)
 
 > ⚠️ **注意！！！** 你实在嫌麻烦的话，叫ai帮你部署就行了。
 
-# xCrab-Agent 🦀
+# OpenCrab 🦀
 
-**xCrab** — AI 个人助手全家桶，集成了 AI 对话引擎（xCrab-Agent）、中转调度服务器（eclaw-server）和远程执行终端（claw-client）。**下载一个仓库，即可完整部署。**
+**OpenCrab** — AI 个人助手全家桶，集成了 AI 对话引擎（OpenCrab）、中转调度服务器（eclaw-server）和远程执行终端（claw-client）。**下载一个仓库，即可完整部署。**
 
 ---
 
@@ -12,10 +12,10 @@
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                   xCrab-Agent（本仓库）                    │
+│                   OpenCrab（本仓库）                       │
 │                                                          │
 │  ┌──────────────────┐    ┌──────────────────┐            │
-│  │  📡 eclaw-server  │    │  🧠 xCrab-Agent  │            │
+│  │  📡 eclaw-server  │    │  🧠 OpenCrab    │            │
 │  │  中转调度服务器    │◄──►│  AI 对话引擎      │            │
 │  │  用户登录/注册    │    │  MiniMax/DeepSeek │            │
 │  │  消息转发(WS)     │    │  工具调用          │            │
@@ -36,7 +36,7 @@
 
 | 组件 | 路径 | 说明 |
 |------|------|------|
-| 🧠 **xCrab-Agent** | 根目录 `./` | AI 对话引擎，对接 MiniMax/DeepSeek，支持工具调用和技能扩展 |
+| 🧠 **OpenCrab** | 根目录 `./` | AI 对话引擎，对接 MiniMax/DeepSeek，支持工具调用和技能扩展 |
 | 📡 **eclaw-server** | [`./server/`](./server/) | 中转调度服务器，管理 WebSocket 连接、用户登录、文件服务、网页前端 |
 | 🤖 **claw-client** | [`./client/`](./client/) | 远程执行终端，通过 WebSocket 连接 eclaw，在目标服务器上执行命令 |
 
@@ -74,8 +74,8 @@ npm -v     # 应显示 10.x.x
 ### 2️⃣ 克隆仓库
 
 ```bash
-git clone https://github.com/yzp100911/xCrab-Agent.git
-cd xCrab-Agent
+git clone https://github.com/yzp100911/OpenCrab.git
+cd OpenCrab
 ```
 
 ### 3️⃣ 一键安装所有依赖
@@ -85,7 +85,7 @@ cd xCrab-Agent
 npm run install:all
 
 # 方式二：手动分步安装
-npm install                              # xCrab-Agent（含所有组件依赖）
+npm install                              # OpenCrab（含所有组件依赖）
 ```
 
 > ⚠️ 所有组件依赖已统一在根 `package.json` 中管理，一次 `npm install` 即可完成。
@@ -156,8 +156,8 @@ npm -v     # 应显示 10.x.x
 sudo apt-get install -y git   # Ubuntu
 # sudo yum install -y git     # CentOS
 
-git clone https://github.com/yzp100911/xCrab-Agent.git
-cd xCrab-Agent
+git clone https://github.com/yzp100911/OpenCrab.git
+cd OpenCrab
 ```
 
 ### 3️⃣ 一键安装所有依赖
@@ -196,17 +196,17 @@ npm run start:all
 **所有组件都提供了 systemd 服务文件：**
 
 ```bash
-# 🧠 xCrab-Agent systemd 服务
-sudo tee /etc/systemd/system/xcrab-agent.service > /dev/null << 'EOF'
+# 🧠 OpenCrab systemd 服务
+sudo tee /etc/systemd/system/opencrab.service > /dev/null << 'EOF'
 [Unit]
-Description=xCrab-Agent AI Engine
+Description=OpenCrab AI Engine
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/xCrab-Agent
-ExecStart=/usr/bin/node /path/to/xCrab-Agent/index.js
+WorkingDirectory=/path/to/OpenCrab
+ExecStart=/usr/bin/node /path/to/OpenCrab/index.js
 Restart=always
 RestartSec=5
 
@@ -223,8 +223,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/xCrab-Agent/server
-ExecStart=/usr/bin/node /path/to/xCrab-Agent/server/server.js
+WorkingDirectory=/path/to/OpenCrab/server
+ExecStart=/usr/bin/node /path/to/OpenCrab/server/server.js
 Restart=always
 RestartSec=5
 
@@ -241,8 +241,8 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/xCrab-Agent/client
-ExecStart=/usr/bin/node /path/to/xCrab-Agent/client/index.js
+WorkingDirectory=/path/to/OpenCrab/client
+ExecStart=/usr/bin/node /path/to/OpenCrab/client/index.js
 Restart=always
 RestartSec=5
 
@@ -252,21 +252,21 @@ EOF
 
 # 重新加载并启动
 sudo systemctl daemon-reload
-sudo systemctl enable xcrab-agent
+sudo systemctl enable opencrab
 sudo systemctl enable eclaw-server
 sudo systemctl enable claw-client
-sudo systemctl start xcrab-agent
+sudo systemctl start opencrab
 sudo systemctl start eclaw-server
 sudo systemctl start claw-client
 ```
 
-> ⚠️ 记得将 `/path/to/xCrab-Agent` 替换为你的实际部署路径。
+> ⚠️ 记得将 `/path/to/OpenCrab` 替换为你的实际部署路径。
 
 ---
 
 ## ⚙️ 环境变量完整说明
 
-### 🧠 xCrab-Agent 配置
+### 🧠 OpenCrab 配置
 
 | 变量 | 默认值 | 必填 | 说明 |
 |------|--------|------|------|
@@ -286,8 +286,8 @@ sudo systemctl start claw-client
 | 变量 | 默认值 | 必填 | 说明 |
 |------|--------|------|------|
 | `ECLAW_PORT` | `10090` | ❌ | 服务器监听端口 |
-| `XCRAB_API_URL` | `http://localhost:3000` | ❌ | xCrab-Agent 网关地址 |
-| `XCRAB_TOKEN` | - | ❌ | 鉴权令牌 |
+| `OPECRAB_API_URL` | `http://localhost:3000` | ❌ | OpenCrab 网关地址 |
+| `OPECRAB_TOKEN` | - | ❌ | 鉴权令牌 |
 
 ### 🤖 claw-client 配置
 
@@ -295,16 +295,16 @@ sudo systemctl start claw-client
 |------|--------|------|------|
 | `ECLAW_API_URL` | `http://127.0.0.1:10090` | ✅ | eclaw-server API 地址 |
 | `ECLAW_WS_URL` | `ws://127.0.0.1:10090/ws` | ✅ | eclaw-server WebSocket 地址 |
-| `CCLAW_AI_BACKEND` | `xcrab` | ❌ | AI 后端选择（xcrab / hermes） |
-| `XCRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | xCrab-Agent 网关地址 |
-| `XCRAB_GATEWAY_TOKEN` | - | ❌ | xCrab-Agent 网关令牌 |
+| `CCLAW_AI_BACKEND` | `opencrab` | ❌ | AI 后端选择（opencrab / hermes） |
+| `OPECRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | OpenCrab 网关地址 |
+| `OPECRAB_GATEWAY_TOKEN` | - | ❌ | OpenCrab 网关令牌 |
 
 ---
 
 ## 📁 项目结构
 
 ```
-xCrab-Agent/
+OpenCrab/
 ├── index.js                   # 🧠 AI 入口文件
 ├── package.json               # 统一依赖管理（含所有组件）
 ├── .env                       # 环境变量（从 .env.example 复制）
@@ -350,99 +350,10 @@ xCrab-Agent/
 ├── uploads/                   # 📡 文件上传目录
 ├── memory/                    # 🧠 持久化记忆
 │
-├── xcrab.service              # 🧠 AI systemd 服务模板
+├── opencrab.service           # 🧠 AI systemd 服务模板
 ├── client/cclaw.service       # 🤖 终端 systemd 服务模板
 │
 └── README.md                  # 本文件（中英文）
-```
-
----
-
-
-
-## 🗄️ MySQL 数据库配置（eclaw-server 必需）
-
-eclaw-server 需要 MySQL 存储用户账号、收藏、聊天记录和反馈。
-
-### 第1步：安装 MySQL
-
-**Ubuntu/Debian：**
-```bash
-sudo apt update
-sudo apt install mysql-server -y
-sudo systemctl start mysql
-sudo systemctl enable mysql
-```
-
-**CentOS：**
-```bash
-sudo yum install mysql-server -y
-sudo systemctl start mysqld
-sudo systemctl enable mysqld
-```
-
-**Windows：**
-从 [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/) 下载安装包，按向导安装即可。
-
-### 第2步：创建数据库
-
-```bash
-sudo mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-```
-
-### 第3步：创建数据库用户（推荐）
-
-```bash
-sudo mysql -u root -p -e "CREATE USER 'wclaw'@'localhost' IDENTIFIED BY 'your_password';"
-sudo mysql -u root -p -e "GRANT ALL PRIVILEGES ON wclaw_db.* TO 'wclaw'@'localhost';"
-sudo mysql -u root -p -e "FLUSH PRIVILEGES;"
-```
-
-### 第4步：配置环境变量
-
-在 `.env` 文件中添加（从 `.env.example` 复制）：
-
-```bash
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root          # 或你刚创建的用户
-DB_PASS=your_password # 你的 MySQL 密码
-DB_NAME=wclaw_db
-```
-
-> **说明：** 首次启动时会自动创建所需的数据库表，无需手动建表。
-
----
-
-## 📋 启动顺序
-
-请**按以下顺序**启动各组件：
-
-### 1️⃣ 启动 xCrab-Agent（AI 对话引擎）
-```bash
-npm start
-```
-AI 引擎默认监听 3000 端口。验证：`curl http://localhost:3000/api/current_model`
-
-### 2️⃣ 启动 eclaw-server（中转调度服务器）
-```bash
-npm run start:server
-```
-中转服务器提供：
-- 网页端界面 http://localhost:10090
-- WebSocket 端点 ws://localhost:10090/ws
-- 用户注册和登录
-- 网页端与终端之间的消息转发
-
-### 3️⃣ 启动 claw-client（远程执行终端）
-```bash
-npm run start:client
-```
-终端通过 WebSocket 连接 eclaw-server，等待接收执行命令。
-
-### 一键启动：
-```bash
-npm run start:all     # 按顺序启动全部三个组件
 ```
 
 ---
@@ -467,7 +378,7 @@ PM2 重启后可能无法正确加载 `.env` 文件中的环境变量，导致 `
 ```javascript
 module.exports = {
   apps: [{
-    name: 'xCrab-Agent',
+    name: 'OpenCrab',
     script: './index.js',
     instances: 1,
     autorestart: true,

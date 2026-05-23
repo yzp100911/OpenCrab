@@ -1,5 +1,5 @@
 /**
- * xCrab Gateway REST API 路由
+ * OpenCrab Gateway REST API 路由
  */
 
 import { Router } from 'express';

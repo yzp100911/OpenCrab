@@ -67,8 +67,8 @@ echo ""
 echo "正在启动 cclaw 客户端..."
 echo "服务端地址: http://127.0.0.1:10090 (同机部署)"
 echo "如需连接远程服务器，请设置环境变量:"
-echo "  # export ECLAW_API_URL=http://localhost:10090"
-echo "  # export ECLAW_WS_URL=ws://localhost:10090/ws"
+echo "  export ECLAW_API_URL=http://xunrf.cn:10090"
+echo "  export ECLAW_WS_URL=ws://xunrf.cn:10090/ws"
 echo "================================================"
 
 # 启动 cclaw
