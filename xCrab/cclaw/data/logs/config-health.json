@@ -1,0 +1,37 @@
+{
+  "entries": {
+    "/opt/cclaw-client/UbuntuClaw/cclaw/data/openclaw.json": {
+      "lastKnownGood": {
+        "hash": "e297cd37745a302b3d1035431225fc7e13de5f2a47d8b208f9fc9d58d35bae70",
+        "bytes": 14219,
+        "mtimeMs": 1779271812964.7078,
+        "ctimeMs": 1779271812964.7078,
+        "dev": "64770",
+        "ino": "1310740",
+        "mode": 504,
+        "nlink": 1,
+        "uid": 1000,
+        "gid": 1000,
+        "hasMeta": true,
+        "gatewayMode": "local",
+        "observedAt": "2026-05-20T10:10:14.638Z"
+      },
+      "lastObservedSuspiciousSignature": null,
+      "lastPromotedGood": {
+        "hash": "21f0f4f9a5fe1d24f22233da6ebed332697e18d3fc8cf166f2988f8f9c583bd1",
+        "bytes": 15081,
+        "mtimeMs": 1778399730149.5544,
+        "ctimeMs": 1778399730149.5544,
+        "dev": "64770",
+        "ino": "1372109",
+        "mode": 33152,
+        "nlink": 1,
+        "uid": 0,
+        "gid": 0,
+        "hasMeta": true,
+        "gatewayMode": "local",
+        "observedAt": "2026-05-10T07:55:31.653Z"
+      }
+    }
+  }
+}

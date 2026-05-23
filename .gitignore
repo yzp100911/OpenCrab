@@ -56,3 +56,15 @@ auth-state.json
 sessions/
 browser/
 uploads/
+
+# Backup/config dups
+*.ds
+*.bak
+*.bak2
+*.bak3
+auth-state.json
+
+# Runtime data
+sessions/
+browser/
+uploads/
