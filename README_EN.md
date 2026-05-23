@@ -1,44 +1,59 @@
-[🇨🇳 中文](README.md) | [🇬🇧 English]
+[🇨🇳 中文](README.md) | [🇬🇧 English](README_EN.md)
 
 > ⚠️ **Attention!!!** If you find it troublesome, just ask AI to deploy it for you.
 
 # OpenCrab 🦀
 
-**OpenCrab** — The all-in-one AI personal assistant family, integrating the AI dialogue engine (OpenCrab), relay dispatch server (eclaw-server), and remote execution terminal (claw-client). **Download one repo, deploy everything.**
+**OpenCrab** — The all-in-one AI personal assistant suite, consisting of four core components: **xCrab (AI Engine)**, **eclaw (Relay Server)**, **cclaw (Remote Agent)**, and **wclaw (Web UI)**.
+
+Download one repo, deploy everything.
 
 ---
 
 ## 📦 System Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                   OpenCrab (This Repo)                   │
-│                                                          │
-│  ┌──────────────────┐    ┌──────────────────┐            │
-│  │  📡 eclaw-server  │    │  🧠 OpenCrab    │            │
-│  │  Relay Server     │◄──►│  AI Engine        │            │
-│  │  User Auth        │    │  MiniMax/DeepSeek │            │
-│  │  Message Relay    │    │  Tool Calling     │            │
-│  │  File Uploads     │    │  Skill Extension  │            │
-│  │  Web UI (wclaw)   │    │  Persist Memory   │            │
-│  └────────┬─────────┘    └──────────────────┘            │
-│           │                                               │
-│           ▼                                               │
-│  ┌──────────────────┐                                    │
-│  │  🤖 claw-client   │                                    │
-│  │  Exec Terminal    │                                    │
-│  │  WebSocket Conn   │                                    │
-│  │  node-pty Term    │                                    │
-│  │  Cmd Execution    │                                    │
-│  └──────────────────┘                                    │
-└──────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│                         OpenCrab (This Repo)                          │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────┐     │
+│  │              xCrab（AI Engine）                                │     │
+│  │   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   │     │
+│  │   │ LLM Call     │   │ Tools/Skills │   │ MCP Client   │   │     │
+│  │   │ MiniMax     │   │ Registry     │   │ Extension    │   │     │
+│  │   │ DeepSeek    │   │ Skill Mods   │   │ Communication│   │     │
+│  │   └──────────────┘   └──────────────┘   └──────────────┘   │     │
+│  └─────────────────────────┬───────────────────────────────────┘     │
+│                            │                                         │
+│                            ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────┐     │
+│  │           eclaw (Relay Server)                                │     │
+│  │   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   │     │
+│  │   │ HTTP API     │   │ WebSocket    │   │ MySQL DB     │   │     │
+│  │   │ Routing/Auth │   │ Message Relay│   │ Users/History│   │     │
+│  │   │              │   │              │   │ Favorites    │   │     │
+│  │   └──────────────┘   └──────────────┘   └──────────────┘   │     │
+│  └─────┬─────────────────────────┬────────────────────────────┘     │
+│        │                         │                                   │
+│        ▼                         ▼                                   │
+│  ┌─────────────────┐   ┌─────────────────────┐                      │
+│  │ wclaw (Web UI)  │   │ cclaw (Remote Agent)│                      │
+│  │ Chat Interface  │   │ WebSocket Remote   │                      │
+│  │ Session Mgmt    │◄──►│ Command Execution  │                      │
+│  │ File Display    │   │ Status Monitor     │                      │
+│  │ Settings/Fav.   │   │ Heartbeat Keepalive│                      │
+│  └─────────────────┘   └─────────────────────┘                      │
+└───────────────────────────────────────────────────────────────────────┘
 ```
 
-| Component | Path | Description |
-|-----------|------|-------------|
-| 🧠 **OpenCrab** | Root `./` | AI dialogue engine, connects to MiniMax/DeepSeek, supports tool calling & skill extensions |
-| 📡 **eclaw-server** | [`./server/`](./server/) | Relay dispatch server, manages WebSocket connections, user auth, file service, web frontend |
-| 🤖 **claw-client** | [`./client/`](./client/) | Remote execution terminal, connects to eclaw via WebSocket, runs commands on target servers |
+### Component Overview
+
+| Component | Path | Role | Responsibilities |
+|-----------|------|------|-----------------|
+| 🧠 **xCrab** | `./xCrab/` | AI Engine | LLM calls (MiniMax/DeepSeek), conversation context, tool/skill execution, Gateway HTTP service |
+| 📡 **eclaw** | `./xCrab/eclaw/` | Relay Server | HTTP API + WebSocket, user auth/registration, message routing, MySQL database management |
+| 🖥️ **wclaw** | `./xCrab/wclaw/` | Web UI | Chat interface, session management, message display, file views, favorites, model switching |
+| 🤖 **cclaw** | `./xCrab/cclaw/` | Remote Agent | WebSocket connection to server, remote command execution, status monitoring, heartbeat keepalive |
 
 ---
 
@@ -50,7 +65,80 @@
 |-------------|-------------|
 | **Node.js** | **v22.12 or higher** |
 | **npm** | Bundled with Node.js |
-| **OS** | Windows 10+ / Ubuntu 20.04+ |
+| **MySQL** | **8.0+** (must be installed and running) |
+| **OS** | Windows 10+ / Ubuntu 20.04+ / macOS |
+
+---
+
+## 🗄️ Database Setup (Required)
+
+eclaw (Relay Server) **requires MySQL** to store user accounts, chat history, favorites, and feedback.
+
+### 1️⃣ Install MySQL
+
+**Windows:**
+1. Download MySQL Installer from [dev.mysql.com](https://dev.mysql.com/downloads/installer/)
+2. Set a **root password** during installation (remember it!)
+3. Note the MySQL port (default `3306`)
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install -y mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
+```
+
+**macOS (Homebrew):**
+```bash
+brew install mysql
+brew services start mysql
+```
+
+### 2️⃣ Create Database
+
+Connect to MySQL and create the database. The app will also try to auto-create it on startup, but manual creation is recommended:
+
+```bash
+mysql -u root -p
+```
+
+At the MySQL prompt:
+```sql
+CREATE DATABASE IF NOT EXISTS wclaw_db
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+```
+
+Or via one-liner:
+```bash
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+### 3️⃣ Configure Database Connection
+
+Edit `xCrab/.env` (refer to `xCrab/.env.example`) to set your database credentials:
+
+| Variable | Default | Required | Description |
+|----------|---------|----------|-------------|
+| `DB_HOST` | `127.0.0.1` | ❌ | MySQL host (keep default for local) |
+| `DB_PORT` | `3306` | ❌ | MySQL port |
+| `DB_USER` | `root` | ❌ | Database username |
+| `DB_PASS` | (empty) | ✅ | **Your MySQL password** |
+| `DB_NAME` | `wclaw_db` | ❌ | Database name |
+
+> ⚠️ **Important:** The default values `DB_USER=wclaw_db` and `DB_PASS=100911yzpYZP` in the source code are **example values only**. You MUST replace them with **your own** database credentials. Do NOT use the example values in production.
+
+### 4️⃣ Auto Table Creation
+
+On first startup, the application will automatically detect and create the following tables (no manual SQL required):
+
+| Table | Purpose |
+|-------|---------|
+| `users` | User accounts, passwords, phone numbers |
+| `history` | Chat history |
+| `feedbacks` | User feedback |
+| `favorites` | Bookmarks/favorites |
+| `notifications` | System notifications |
 
 ---
 
@@ -78,22 +166,17 @@ git clone https://github.com/yzp100911/OpenCrab.git
 cd OpenCrab
 ```
 
-### 3️⃣ Install All Dependencies
+### 3️⃣ Install Dependencies
 
 ```bash
-# One-click install
-npm run install:all
-
-# Or simply:
+cd xCrab
 npm install
 ```
 
-> ⚠️ All component dependencies are unified in the root `package.json`. A single `npm install` is all you need.
->
-> If `better-sqlite3` fails to compile, install **Visual Studio Build Tools** (with C++ tools), or run:
-> ```bash
-> npm install better-sqlite3 --force
-> ```
+If `better-sqlite3` fails to compile, install **Visual Studio Build Tools** (with C++ tools), or run:
+```bash
+npm install better-sqlite3 --force
+```
 
 ### 4️⃣ Configure Environment
 
@@ -101,30 +184,41 @@ npm install
 copy .env.example .env
 ```
 
-Open `.env` with Notepad or VS Code, fill in required keys:
+Open `xCrab/.env` with Notepad or VS Code, fill in these **required** fields:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `MINIMAX_API_KEY` | ✅ **Required** | MiniMax API key ([Get one](https://platform.minimaxi.com)) |
 | `DEEPSEEK_API_KEY` | ❌ Optional | DeepSeek API key |
+| `DB_PASS` | ✅ **Required** | **Your** MySQL password |
 
-> If you don't need AI connectivity (relay & terminal only), you can skip the API keys for now.
+### 5️⃣ Start Services
 
-### 5️⃣ Start Components
+**Option A: Start separately (recommended for debugging)**
 
 ```bash
-# Start AI Engine
+# Terminal 1: Start AI Engine (xCrab Gateway)
+cd xCrab
 npm start
 
-# Start Relay Server (new terminal)
-npm run start:server
+# Terminal 2: Start Relay Server (eclaw, includes web UI)
+cd xCrab/eclaw
+npm install
+node server.js
 
-# Start Execution Terminal (new terminal)
-npm run start:client
+# Terminal 3: Start Remote Agent (cclaw, optional)
+cd xCrab/cclaw
+npm install
+node index.js
+```
 
-# Or start everything with one command
+**Option B: One-click start**
+```bash
+cd xCrab
 npm run start:all
 ```
+
+> Once started, open **http://localhost:10090** in your browser.
 
 ---
 
@@ -150,99 +244,103 @@ node -v    # Should show v22.x.x
 npm -v     # Should show 10.x.x
 ```
 
-### 2️⃣ Clone Repository
+### 2️⃣ Clone Repository & Install MySQL
 
 ```bash
-sudo apt-get install -y git   # Ubuntu
-# sudo yum install -y git     # CentOS
+sudo apt-get install -y git mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
 
 git clone https://github.com/yzp100911/OpenCrab.git
 cd OpenCrab
 ```
 
-### 3️⃣ Install All Dependencies
+### 3️⃣ Create Database
 
 ```bash
-# One-click install
-npm run install:all
-# or bash install-all.sh
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-### 4️⃣ Configure Environment
+### 4️⃣ Install Dependencies & Configure
 
 ```bash
+cd xCrab
+npm install
 cp .env.example .env
-nano .env   # Fill in API keys
+nano .env   # Fill in API keys and DB password
 ```
 
-### 5️⃣ Start Components
+### 5️⃣ Start Services
 
 ```bash
-# Start AI Engine
-npm start
+# AI Engine
+cd xCrab && npm start &
 
-# Start Relay Server (new terminal)
-npm run start:server
+# Relay Server (includes web UI)
+cd xCrab/eclaw && node server.js &
 
-# Start Execution Terminal (new terminal)
-npm run start:client
-
-# Or start everything
-npm run start:all
+# One-click start
+cd xCrab && npm run start:all
 ```
 
-### 6️⃣ ★ Auto-start with systemd
+> Open **http://your-server-ip:10090** in a browser to access the web UI.
 
-**All three components have systemd service templates:**
+### 6️⃣ ★ Systemd Auto-start
+
+Below are systemd service files for all three components. **Replace `/path/to/OpenCrab` with your actual deployment path.**
 
 ```bash
-# 🧠 OpenCrab systemd service
-sudo tee /etc/systemd/system/opencrab.service > /dev/null << 'EOF'
+# 🧠 xCrab AI Engine
+sudo tee /etc/systemd/system/xcrab.service > /dev/null << 'EOF'
 [Unit]
-Description=OpenCrab AI Engine
-After=network.target
+Description=xCrab AI Engine
+After=network.target mysql.service
+Requires=mysql.service
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/OpenCrab
-ExecStart=/usr/bin/node /path/to/OpenCrab/index.js
+WorkingDirectory=/path/to/OpenCrab/xCrab
+ExecStart=/usr/bin/node /path/to/OpenCrab/xCrab/index.js
 Restart=always
 RestartSec=5
+Environment=NODE_ENV=production
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-# 📡 eclaw-server systemd service
-sudo tee /etc/systemd/system/eclaw-server.service > /dev/null << 'EOF'
+# 📡 eclaw Relay Server (includes web UI)
+sudo tee /etc/systemd/system/eclaw.service > /dev/null << 'EOF'
 [Unit]
-Description=Eclaw-Server (Message Relay)
-After=network.target
+Description=Eclaw Service (WebSocket + API)
+After=network.target mysql.service
+Requires=mysql.service
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/OpenCrab/server
-ExecStart=/usr/bin/node /path/to/OpenCrab/server/server.js
+WorkingDirectory=/path/to/OpenCrab/xCrab/eclaw
+ExecStart=/usr/bin/node /path/to/OpenCrab/xCrab/eclaw/server.js
 Restart=always
 RestartSec=5
+Environment=NODE_ENV=production
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-# 🤖 claw-client systemd service
-sudo tee /etc/systemd/system/claw-client.service > /dev/null << 'EOF'
+# 🤖 cclaw Remote Agent (optional, for remote execution)
+sudo tee /etc/systemd/system/cclaw.service > /dev/null << 'EOF'
 [Unit]
-Description=Claw-Client (Remote Terminal)
+Description=Cclaw Client (Remote Execution)
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/OpenCrab/client
-ExecStart=/usr/bin/node /path/to/OpenCrab/client/index.js
+WorkingDirectory=/path/to/OpenCrab/xCrab/cclaw
+ExecStart=/usr/bin/node /path/to/OpenCrab/xCrab/cclaw/index.js
 Restart=always
 RestartSec=5
 
@@ -252,48 +350,46 @@ EOF
 
 # Reload and start
 sudo systemctl daemon-reload
-sudo systemctl enable opencrab eclaw-server claw-client
-sudo systemctl start opencrab eclaw-server claw-client
+sudo systemctl enable xcrab eclaw cclaw
+sudo systemctl start xcrab eclaw
 ```
-
-> ⚠️ Replace `/path/to/OpenCrab` with your actual deployment path.
 
 ---
 
 ## ⚙️ Environment Variables Reference
 
-### 🧠 OpenCrab Config
+### 🧠 xCrab AI Engine
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
-| `MINIMAX_API_KEY` | - | ✅ | MiniMax API key |
+| `MINIMAX_API_KEY` | - | ✅ | MiniMax API key ([Get one](https://platform.minimaxi.com)) |
 | `MINIMAX_BASE_URL` | `https://api.minimaxi.com/v1` | ❌ | MiniMax API base URL |
 | `DEEPSEEK_API_KEY` | - | ❌ | DeepSeek API key |
 | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com/v1` | ❌ | DeepSeek API base URL |
 | `MODEL` | `MiniMax-M2.7` | ❌ | Model to use |
 | `ENABLE_MEMORY` | `false` | ❌ | Enable persistent memory |
-| `GATEWAY_ENABLED` | `false` | ❌ | Enable Gateway HTTP service |
-| `GATEWAY_PORT` | `3000` | ❌ | Gateway service port |
-| `GATEWAY_JWT_SECRET` | - | ❌ | Gateway JWT secret |
-| `GATEWAY_TOKEN` | - | ❌ | Gateway static token |
+| `GATEWAY_PORT` | `3000` | ❌ | xCrab Gateway HTTP port |
 
-### 📡 eclaw-server Config
+### 📡 eclaw Relay Server
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
-| `ECLAW_PORT` | `10090` | ❌ | Server listen port |
-| `OPECRAB_API_URL` | `http://localhost:3000` | ❌ | OpenCrab gateway URL |
-| `OPECRAB_TOKEN` | - | ❌ | Auth token |
+| `ECLAW_PORT` | `10090` | ❌ | Server listen port (web UI access port) |
+| `DB_HOST` | `127.0.0.1` | ❌ | MySQL host |
+| `DB_PORT` | `3306` | ❌ | MySQL port |
+| `DB_USER` | `root` | ❌ | Database username |
+| `DB_PASS` | (empty) | ✅ | **Your MySQL password** |
+| `DB_NAME` | `wclaw_db` | ❌ | Database name |
+| `XCRAB_API_URL` | `http://localhost:3000` | ❌ | xCrab Gateway URL |
+| `XCRAB_TOKEN` | - | ❌ | xCrab auth token |
 
-### 🤖 claw-client Config
+### 🤖 cclaw Remote Agent
 
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
-| `ECLAW_API_URL` | `http://127.0.0.1:10090` | ✅ | eclaw-server API URL |
-| `ECLAW_WS_URL` | `ws://127.0.0.1:10090/ws` | ✅ | eclaw-server WebSocket URL |
-| `CCLAW_AI_BACKEND` | `opencrab` | ❌ | AI backend (`opencrab` recommended / `hermes` deprecated) |
-| `OPECRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | OpenCrab gateway URL |
-| `OPECRAB_GATEWAY_TOKEN` | - | ❌ | OpenCrab gateway token |
+| `ECLAW_API_URL` | `http://127.0.0.1:10090` | ✅ | eclaw server HTTP URL |
+| `ECLAW_WS_URL` | `ws://127.0.0.1:10090/ws` | ✅ | eclaw server WebSocket URL |
+| `CCLAW_USERNAME` | `ad1009` | ❌ | Agent login username (must be registered in eclaw) |
 
 ---
 
@@ -301,55 +397,58 @@ sudo systemctl start opencrab eclaw-server claw-client
 
 ```
 OpenCrab/
-├── index.js                   # 🧠 AI entry point
-├── package.json               # Unified dependency management (all components)
-├── .env                       # Environment config (copy from .env.example)
-├── .env.example               # Environment variable template
-├── install-all.sh             # One-click install script (Linux)
-├── LICENSE                    # MIT License
+├── README.md                   # This file (Chinese)
+├── README_EN.md                # This file (English)
+├── .gitignore
+├── LICENSE
 │
-├── src/                       # 🧠 AI core source code
-│   ├── cli.js                 # CLI interaction
-│   ├── llm.js                 # LLM invocation
-│   ├── tools.js               # Tool function registry
-│   ├── skill-manager.js       # Skill manager
-│   ├── gateway/               # HTTP API Gateway
-│   ├── mcp/                   # MCP protocol client
-│   ├── workspace/             # Workspace management
-│   └── ...
-│
-├── skills/                    # 🧠 Skill modules
-├── tests/                     # 🧠 Test files
-│
-├── server/                    # 📡 eclaw-server (Relay Dispatch Server)
-│   ├── server.js              # Main server entry
-│   ├── package.json           # Standalone deps (CommonJS)
-│   ├── cloud-sync.js          # Cloud sync
-│   ├── wclaw/                 # Web frontend
-│   │   ├── index.html         # Main page
-│   │   ├── app.js             # Frontend entry
-│   │   ├── app-base.js        # Base logic
-│   │   ├── app-auth.js        # Auth
-│   │   ├── app-main.js        # Main logic
-│   │   ├── styles.css         # Styles
-│   │   └── icon/              # Icons
-│   └── README.md              # Deployment docs
-│
-├── client/                    # 🤖 claw-client (Remote Execution Terminal)
-│   ├── index.js               # Terminal entry
-│   ├── package.json           # Standalone deps (CommonJS)
-│   ├── status-monitor.js      # Status monitor
-│   ├── start.sh               # Startup script
-│   └── README.md              # Deployment docs
-│
-├── data/                      # 🧠 AI runtime data
-├── uploads/                   # 📡 File upload directory
-├── memory/                    # 🧠 Persistent memory
-│
-├── opencrab.service           # 🧠 AI systemd service template
-├── client/cclaw.service       # 🤖 Terminal systemd service template
-│
-└── README.md                  # This file (CN/EN)
+└── xCrab/                      # 🧠 AI Engine (main directory)
+    ├── index.js                # Entry point
+    ├── package.json            # Dependencies
+    ├── .env.example            # Environment template
+    ├── .env                    # Environment config (create from template)
+    │
+    ├── src/                    # 🧠 AI Core Source
+    │   ├── cli.js              # CLI interaction
+    │   ├── llm.js              # LLM calls (MiniMax/DeepSeek)
+    │   ├── tools.js            # Tool function registry
+    │   ├── skill-manager.js    # Skill manager
+    │   ├── gateway/            # HTTP API Gateway
+    │   │   ├── server.js       # Gateway service
+    │   │   ├── api-handler.js  # API handler
+    │   │   ├── llm-stream.js   # Streaming LLM response
+    │   │   └── frontend/       # xCrab built-in frontend
+    │   ├── config.js           # Configuration
+    │   ├── history.js          # Conversation history
+    │   ├── planner.js          # Task planner
+    │   └── mcp/                # MCP protocol client
+    │
+    ├── skills/                 # 🧠 Skill modules
+    ├── tests/                  # 🧠 Tests
+    │
+    ├── eclaw/                  # 📡 Relay Server
+    │   ├── server.js           # Server entry (API + WebSocket)
+    │   ├── cloud-sync.js       # Database config module
+    │   ├── package.json        # Dependencies (express, mysql2, ws)
+    │   └── users.json          # Local user cache
+    │
+    ├── wclaw/                  # 🖥️ Web UI
+    │   ├── index.html          # Main page
+    │   ├── app.js              # Frontend entry
+    │   ├── app-base.js         # Base logic
+    │   ├── app-auth.js         # Auth
+    │   ├── app-main.js         # Main logic
+    │   ├── styles.css          # Styles
+    │   └── icon/               # Icons
+    │
+    ├── cclaw/                  # 🤖 Remote Agent
+    │   ├── index.js            # Agent entry
+    │   ├── status-monitor.js   # Status monitor
+    │   ├── package.json        # Dependencies
+    │   └── data/               # Agent configuration
+    │
+    ├── data/                   # AI runtime data
+    └── uploads/                # File upload directory
 ```
 
 ---
@@ -358,11 +457,13 @@ OpenCrab/
 
 | Problem | Solution |
 |---------|----------|
-| `MINIMAX_API_KEY` not configured | Check that `.env` is properly configured |
-| `better-sqlite3` install failure | Install build-essential (Linux) or VS Build Tools (Windows) |
-| Port already in use | Change `GATEWAY_PORT` or `ECLAW_PORT` in `.env` |
-| WebSocket connection failed | Check `ECLAW_WS_URL` address and port |
-| eclaw-server frontend not accessible | Verify `wclaw/` directory exists and static file paths are correct in `server.js` |
+| MySQL connection: `ECONNREFUSED` | Check MySQL is running: `systemctl status mysql` |
+| MySQL connection: `ER_ACCESS_DENIED_ERROR` | Verify `DB_USER` and `DB_PASS` in `.env` |
+| MySQL connection: `ER_BAD_DB_ERROR` | Create the database first: `mysql -u root -p -e "CREATE DATABASE wclaw_db"` |
+| MiniMax API returns 401 | Check `MINIMAX_API_KEY` is correct |
+| Web UI returns 404 | Verify static file path in `eclaw/server.js` points to `../wclaw/` |
+| Port in use | Change `ECLAW_PORT` or `GATEWAY_PORT` in `.env` |
+| `better-sqlite3` install fails | Install build-essential (Linux) or VS Build Tools (Windows) |
 
 ### Get API Keys
 

@@ -1,44 +1,59 @@
 [🇨🇳 中文](README.md) | [🇬🇧 English](README_EN.md)
 
-> ⚠️ **注意！！！** 你实在嫌麻烦的话，叫ai帮你部署就行了。
+> ⚠️ **注意！！！** 如果你觉得部署麻烦，可以让 AI 帮你完成部署。
 
 # OpenCrab 🦀
 
-**OpenCrab** — AI 个人助手全家桶，集成了 AI 对话引擎（OpenCrab）、中转调度服务器（eclaw-server）和远程执行终端（claw-client）。**下载一个仓库，即可完整部署。**
+**OpenCrab** — AI 个人助手全家桶，包含四个核心组件：**xCrab（AI 执行引擎）**、**eclaw（服务调度端）**、**cclaw（远程分发端）**、**wclaw（网页客户端）**。
+
+下载一个仓库，即可完整部署。
 
 ---
 
 ## 📦 系统架构
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                   OpenCrab（本仓库）                       │
-│                                                          │
-│  ┌──────────────────┐    ┌──────────────────┐            │
-│  │  📡 eclaw-server  │    │  🧠 OpenCrab    │            │
-│  │  中转调度服务器    │◄──►│  AI 对话引擎      │            │
-│  │  用户登录/注册    │    │  MiniMax/DeepSeek │            │
-│  │  消息转发(WS)     │    │  工具调用          │            │
-│  │  文件上传服务     │    │  技能扩展          │            │
-│  │  网页前端(wclaw)  │    │  持久化记忆        │            │
-│  └────────┬─────────┘    └──────────────────┘            │
-│           │                                               │
-│           ▼                                               │
-│  ┌──────────────────┐                                    │
-│  │  🤖 claw-client   │                                    │
-│  │  远程执行终端     │                                    │
-│  │  WebSocket 连接   │                                    │
-│  │  node-pty 终端    │                                    │
-│  │  服务器命令执行   │                                    │
-│  └──────────────────┘                                    │
-└──────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────┐
+│                          OpenCrab（本仓库）                            │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────┐     │
+│  │          xCrab（AI 执行引擎）                                  │     │
+│  │   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   │     │
+│  │   │ LLM 调用      │   │ 工具/技能     │   │ MCP 客户端    │   │     │
+│  │   │ MiniMax      │   │ 注册中心     │   │ 扩展通信      │   │     │
+│  │   │ DeepSeek     │   │ 技能模块     │   │              │   │     │
+│  │   └──────────────┘   └──────────────┘   └──────────────┘   │     │
+│  └─────────────────────────┬───────────────────────────────────┘     │
+│                            │                                         │
+│                            ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────┐     │
+│  │             eclaw（服务调度端）                                 │     │
+│  │   ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   │     │
+│  │   │ HTTP API     │   │ WebSocket    │   │ MySQL 数据库  │   │     │
+│  │   │ 路由/鉴权    │   │ 消息转发      │   │ 用户/历史/    │   │     │
+│  │   │              │   │              │   │ 收藏/反馈    │   │     │
+│  │   └──────────────┘   └──────────────┘   └──────────────┘   │     │
+│  └─────┬─────────────────────────┬────────────────────────────┘     │
+│        │                         │                                   │
+│        ▼                         ▼                                   │
+│  ┌─────────────────┐   ┌─────────────────────┐                      │
+│  │ wclaw（网页端）   │   │ cclaw（分发端）       │                      │
+│  │ 聊天界面         │   │ WebSocket 远程      │                      │
+│  │ 会话管理         │◄──►│ 命令执行终端        │                      │
+│  │ 文件展示         │   │ 状态监控            │                      │
+│  │ 设置/收藏        │   │ 心跳保活            │                      │
+│  └─────────────────┘   └─────────────────────┘                      │
+└───────────────────────────────────────────────────────────────────────┘
 ```
 
-| 组件 | 路径 | 说明 |
-|------|------|------|
-| 🧠 **OpenCrab** | 根目录 `./` | AI 对话引擎，对接 MiniMax/DeepSeek，支持工具调用和技能扩展 |
-| 📡 **eclaw-server** | [`./server/`](./server/) | 中转调度服务器，管理 WebSocket 连接、用户登录、文件服务、网页前端 |
-| 🤖 **claw-client** | [`./client/`](./client/) | 远程执行终端，通过 WebSocket 连接 eclaw，在目标服务器上执行命令 |
+### 组件说明
+
+| 组件 | 路径 | 角色 | 职责 |
+|------|------|------|------|
+| 🧠 **xCrab** | `./xCrab/` | AI 执行引擎 | 调用 LLM（MiniMax/DeepSeek）、管理对话上下文、执行工具/技能、Gateway HTTP 服务 |
+| 📡 **eclaw** | `./xCrab/eclaw/` | 服务调度端 | HTTP API + WebSocket 服务、用户登录/注册/鉴权、消息路由转发、MySQL 数据库管理 |
+| 🖥️ **wclaw** | `./xCrab/wclaw/` | 网页客户端 | 聊天界面、会话管理、消息展示、文件显示、收藏/反馈、模型切换 |
+| 🤖 **cclaw** | `./xCrab/cclaw/` | 远程分发端 | WebSocket 连接服务端、在远程机器执行命令、状态监控上报、心跳保活 |
 
 ---
 
@@ -50,7 +65,80 @@
 |------|------|
 | **Node.js** | **v22.12 或更高** |
 | **npm** | 随 Node.js 自带 |
-| **系统** | Windows 10+ / Ubuntu 20.04+ |
+| **MySQL** | **8.0+**（必须安装并运行） |
+| **系统** | Windows 10+ / Ubuntu 20.04+ / macOS |
+
+---
+
+## 🗄️ 数据库配置（必须先完成）
+
+eclaw（服务调度端）**依赖 MySQL 数据库**存储用户账号、聊天历史、收藏、反馈等数据。
+
+### 1️⃣ 安装 MySQL
+
+**Windows：**
+1. 前往 [MySQL 官网](https://dev.mysql.com/downloads/installer/) 下载 MySQL Installer
+2. 安装过程中设置 **root 密码**（请牢记）
+3. 记下 MySQL 端口（默认 `3306`）
+
+**Ubuntu/Debian：**
+```bash
+sudo apt-get install -y mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
+```
+
+**macOS（Homebrew）：**
+```bash
+brew install mysql
+brew services start mysql
+```
+
+### 2️⃣ 创建数据库
+
+连接 MySQL 并创建数据库。应用启动时也会自动尝试创建，但建议先手动创建：
+
+```bash
+mysql -u root -p
+```
+
+在 MySQL 提示符下执行：
+```sql
+CREATE DATABASE IF NOT EXISTS wclaw_db
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+```
+
+或者一行命令完成：
+```bash
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+### 3️⃣ 配置数据库连接
+
+在 `xCrab/.env` 文件中配置数据库连接信息（参考 `xCrab/.env.example`）：
+
+| 变量 | 默认值 | 必填 | 说明 |
+|------|--------|------|------|
+| `DB_HOST` | `127.0.0.1` | ❌ | MySQL 主机地址（本地部署不用改） |
+| `DB_PORT` | `3306` | ❌ | MySQL 端口 |
+| `DB_USER` | `root` | ❌ | 数据库用户名 |
+| `DB_PASS` | （空） | ✅ | **你的 MySQL 密码** |
+| `DB_NAME` | `wclaw_db` | ❌ | 数据库名 |
+
+> ⚠️ **注意：** 代码中默认的 `DB_USER=wclaw_db` 和 `DB_PASS=100911yzpYZP` **仅是示例值**。部署时必须修改为你**自己**的数据库账号密码。请勿直接使用示例值。
+
+### 4️⃣ 自动建表
+
+应用启动时会自动检测并创建以下数据表（无需手动执行 SQL）：
+
+| 表名 | 用途 |
+|------|------|
+| `users` | 用户账号、密码、手机号 |
+| `history` | 聊天历史记录 |
+| `feedbacks` | 用户反馈 |
+| `favorites` | 用户收藏/书签 |
+| `notifications` | 系统通知 |
 
 ---
 
@@ -58,7 +146,7 @@
 
 ### 1️⃣ 安装 Node.js
 
-**方法一（推荐）：** 访问 [nodejs.org](https://nodejs.org) 下载 **v22.x LTS**，运行安装程序（勾选"Add to PATH"）。
+**方法一（推荐）：** 访问 [nodejs.org](https://nodejs.org) 下载 **v22.x LTS**，运行安装程序（勾选 "Add to PATH"）。
 
 **方法二：winget**
 ```bash
@@ -78,22 +166,17 @@ git clone https://github.com/yzp100911/OpenCrab.git
 cd OpenCrab
 ```
 
-### 3️⃣ 一键安装所有依赖
+### 3️⃣ 安装依赖
 
 ```bash
-# 方式一：一键安装
-npm run install:all
-
-# 方式二：手动分步安装
-npm install                              # OpenCrab（含所有组件依赖）
+cd xCrab
+npm install
 ```
 
-> ⚠️ 所有组件依赖已统一在根 `package.json` 中管理，一次 `npm install` 即可完成。
->
-> 如果 `better-sqlite3` 编译报错，请安装 **Visual Studio Build Tools**（含 C++ 构建工具），或运行：
-> ```bash
-> npm install better-sqlite3 --force
-> ```
+如果 `better-sqlite3` 编译报错，请安装 **Visual Studio Build Tools**（含 C++ 构建工具），或运行：
+```bash
+npm install better-sqlite3 --force
+```
 
 ### 4️⃣ 配置环境变量
 
@@ -101,30 +184,41 @@ npm install                              # OpenCrab（含所有组件依赖）
 copy .env.example .env
 ```
 
-用记事本或 VS Code 打开 `.env`，填写必要的密钥：
+用记事本或 VS Code 打开 `xCrab/.env`，填写以下**必填项**：
 
 | 变量 | 必填 | 说明 |
 |------|------|------|
 | `MINIMAX_API_KEY` | ✅ **必填** | MiniMax API 密钥（[获取](https://platform.minimaxi.com)） |
 | `DEEPSEEK_API_KEY` | ❌ 可选 | DeepSeek API 密钥 |
+| `DB_PASS` | ✅ **必填** | **你的** MySQL 数据库密码 |
 
-> 如果你不需要连接 AI（仅使用中转和终端功能），可以先不填密钥。
+### 5️⃣ 启动服务
 
-### 5️⃣ 启动组件
+**方式一：分别启动（推荐调试时使用）**
 
 ```bash
-# 启动 AI 对话引擎
+# 终端 1：启动 AI 执行引擎（xCrab Gateway）
+cd xCrab
 npm start
 
-# 启动中转调度服务器（新开一个终端）
-npm run start:server
+# 终端 2：启动服务调度端（eclaw，含网页端）
+cd xCrab/eclaw
+npm install
+node server.js
 
-# 启动远程执行终端（新开一个终端）
-npm run start:client
+# 终端 3：启动分发端（cclaw，可选，仅需要远程执行时）
+cd xCrab/cclaw
+npm install
+node index.js
+```
 
-# 或一键启动全部组件
+**方式二：一键启动全部**
+```bash
+cd xCrab
 npm run start:all
 ```
+
+> 启动成功后，浏览器访问 **http://localhost:10090** 即可打开网页端。
 
 ---
 
@@ -150,99 +244,103 @@ node -v    # 应显示 v22.x.x
 npm -v     # 应显示 10.x.x
 ```
 
-### 2️⃣ 克隆仓库
+### 2️⃣ 克隆仓库与安装 MySQL
 
 ```bash
-sudo apt-get install -y git   # Ubuntu
-# sudo yum install -y git     # CentOS
+sudo apt-get install -y git mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
 
 git clone https://github.com/yzp100911/OpenCrab.git
 cd OpenCrab
 ```
 
-### 3️⃣ 一键安装所有依赖
+### 3️⃣ 创建数据库
 
 ```bash
-# 一键安装
-npm run install:all
-# 或 bash install-all.sh
+sudo mysql -e "CREATE DATABASE IF NOT EXISTS wclaw_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-### 4️⃣ 配置环境变量
+### 4️⃣ 安装依赖并配置
 
 ```bash
+cd xCrab
+npm install
 cp .env.example .env
-nano .env   # 填写 API 密钥
+nano .env   # 填写 API 密钥和数据库密码
 ```
 
-### 5️⃣ 启动组件
+### 5️⃣ 启动服务
 
 ```bash
-# 启动 AI 对话引擎
-npm start
+# AI 执行引擎
+cd xCrab && npm start &
 
-# 启动中转调度服务器（新开终端）
-npm run start:server
+# 服务调度端（含网页端）
+cd xCrab/eclaw && node server.js &
 
-# 启动远程执行终端（新开终端）
-npm run start:client
-
-# 或一键启动全部
-npm run start:all
+# 一键启动
+cd xCrab && npm run start:all
 ```
 
-### 6️⃣ ★ 设置开机自启（systemd 服务）
+> 启动后访问 **http://你的服务器IP:10090** 即可打开网页端。
 
-**所有组件都提供了 systemd 服务文件：**
+### 6️⃣ ★ 设置开机自启（systemd）
+
+以下列出了三个组件的 systemd 服务文件。**请将 `/path/to/OpenCrab` 替换为你的实际部署路径。**
 
 ```bash
-# 🧠 OpenCrab systemd 服务
-sudo tee /etc/systemd/system/opencrab.service > /dev/null << 'EOF'
+# 🧠 xCrab AI 执行引擎
+sudo tee /etc/systemd/system/xcrab.service > /dev/null << 'EOF'
 [Unit]
-Description=OpenCrab AI Engine
-After=network.target
+Description=xCrab AI Engine
+After=network.target mysql.service
+Requires=mysql.service
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/OpenCrab
-ExecStart=/usr/bin/node /path/to/OpenCrab/index.js
+WorkingDirectory=/path/to/OpenCrab/xCrab
+ExecStart=/usr/bin/node /path/to/OpenCrab/xCrab/index.js
 Restart=always
 RestartSec=5
+Environment=NODE_ENV=production
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-# 📡 eclaw-server systemd 服务
-sudo tee /etc/systemd/system/eclaw-server.service > /dev/null << 'EOF'
+# 📡 eclaw 服务调度端（含网页端）
+sudo tee /etc/systemd/system/eclaw.service > /dev/null << 'EOF'
 [Unit]
-Description=Eclaw-Server (Message Relay)
-After=network.target
+Description=Eclaw Service (WebSocket + API)
+After=network.target mysql.service
+Requires=mysql.service
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/OpenCrab/server
-ExecStart=/usr/bin/node /path/to/OpenCrab/server/server.js
+WorkingDirectory=/path/to/OpenCrab/xCrab/eclaw
+ExecStart=/usr/bin/node /path/to/OpenCrab/xCrab/eclaw/server.js
 Restart=always
 RestartSec=5
+Environment=NODE_ENV=production
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-# 🤖 claw-client systemd 服务
-sudo tee /etc/systemd/system/claw-client.service > /dev/null << 'EOF'
+# 🤖 cclaw 远程分发端（可选，仅需远程执行时）
+sudo tee /etc/systemd/system/cclaw.service > /dev/null << 'EOF'
 [Unit]
-Description=Claw-Client (Remote Terminal)
+Description=Cclaw Client (Remote Execution)
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/path/to/OpenCrab/client
-ExecStart=/usr/bin/node /path/to/OpenCrab/client/index.js
+WorkingDirectory=/path/to/OpenCrab/xCrab/cclaw
+ExecStart=/usr/bin/node /path/to/OpenCrab/xCrab/cclaw/index.js
 Restart=always
 RestartSec=5
 
@@ -252,52 +350,46 @@ EOF
 
 # 重新加载并启动
 sudo systemctl daemon-reload
-sudo systemctl enable opencrab
-sudo systemctl enable eclaw-server
-sudo systemctl enable claw-client
-sudo systemctl start opencrab
-sudo systemctl start eclaw-server
-sudo systemctl start claw-client
+sudo systemctl enable xcrab eclaw cclaw
+sudo systemctl start xcrab eclaw
 ```
-
-> ⚠️ 记得将 `/path/to/OpenCrab` 替换为你的实际部署路径。
 
 ---
 
 ## ⚙️ 环境变量完整说明
 
-### 🧠 OpenCrab 配置
+### 🧠 xCrab AI 执行引擎
 
 | 变量 | 默认值 | 必填 | 说明 |
 |------|--------|------|------|
-| `MINIMAX_API_KEY` | - | ✅ | MiniMax API 密钥 |
+| `MINIMAX_API_KEY` | - | ✅ | MiniMax API 密钥（[获取](https://platform.minimaxi.com)） |
 | `MINIMAX_BASE_URL` | `https://api.minimaxi.com/v1` | ❌ | MiniMax API 地址 |
 | `DEEPSEEK_API_KEY` | - | ❌ | DeepSeek API 密钥 |
 | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com/v1` | ❌ | DeepSeek API 地址 |
 | `MODEL` | `MiniMax-M2.7` | ❌ | 使用的模型 |
 | `ENABLE_MEMORY` | `false` | ❌ | 启用持久化记忆 |
-| `GATEWAY_ENABLED` | `false` | ❌ | 启用 Gateway HTTP 服务 |
-| `GATEWAY_PORT` | `3000` | ❌ | Gateway 服务端口 |
-| `GATEWAY_JWT_SECRET` | - | ❌ | Gateway JWT 密钥 |
-| `GATEWAY_TOKEN` | - | ❌ | Gateway 静态令牌 |
+| `GATEWAY_PORT` | `3000` | ❌ | xCrab Gateway HTTP 端口 |
 
-### 📡 eclaw-server 配置
+### 📡 eclaw 服务调度端
 
 | 变量 | 默认值 | 必填 | 说明 |
 |------|--------|------|------|
-| `ECLAW_PORT` | `10090` | ❌ | 服务器监听端口 |
-| `OPECRAB_API_URL` | `http://localhost:3000` | ❌ | OpenCrab 网关地址 |
-| `OPECRAB_TOKEN` | - | ❌ | 鉴权令牌 |
+| `ECLAW_PORT` | `10090` | ❌ | 服务监听端口（网页端访问端口） |
+| `DB_HOST` | `127.0.0.1` | ❌ | MySQL 主机地址 |
+| `DB_PORT` | `3306` | ❌ | MySQL 端口 |
+| `DB_USER` | `root` | ❌ | 数据库用户名 |
+| `DB_PASS` | （空） | ✅ | **你的 MySQL 密码** |
+| `DB_NAME` | `wclaw_db` | ❌ | 数据库名 |
+| `XCRAB_API_URL` | `http://localhost:3000` | ❌ | xCrab Gateway 地址 |
+| `XCRAB_TOKEN` | - | ❌ | xCrab 鉴权令牌 |
 
-### 🤖 claw-client 配置
+### 🤖 cclaw 远程分发端
 
 | 变量 | 默认值 | 必填 | 说明 |
 |------|--------|------|------|
-| `ECLAW_API_URL` | `http://127.0.0.1:10090` | ✅ | eclaw-server API 地址 |
-| `ECLAW_WS_URL` | `ws://127.0.0.1:10090/ws` | ✅ | eclaw-server WebSocket 地址 |
-| `CCLAW_AI_BACKEND` | `opencrab` | ❌ | AI 后端选择（opencrab / hermes） |
-| `OPECRAB_GATEWAY_URL` | `http://localhost:3000` | ❌ | OpenCrab 网关地址 |
-| `OPECRAB_GATEWAY_TOKEN` | - | ❌ | OpenCrab 网关令牌 |
+| `ECLAW_API_URL` | `http://127.0.0.1:10090` | ✅ | eclaw 服务 HTTP 地址 |
+| `ECLAW_WS_URL` | `ws://127.0.0.1:10090/ws` | ✅ | eclaw 服务 WebSocket 地址 |
+| `CCLAW_USERNAME` | `ad1009` | ❌ | 分发端登录用户名（需在 eclaw 注册） |
 
 ---
 
@@ -305,55 +397,58 @@ sudo systemctl start claw-client
 
 ```
 OpenCrab/
-├── index.js                   # 🧠 AI 入口文件
-├── package.json               # 统一依赖管理（含所有组件）
-├── .env                       # 环境变量（从 .env.example 复制）
-├── .env.example               # 环境变量模板
-├── install-all.sh             # 一键安装脚本（Linux）
-├── LICENSE                    # MIT 许可证
+├── README.md                   # 本文件（中文）
+├── README_EN.md                # 本文件（英文）
+├── .gitignore
+├── LICENSE
 │
-├── src/                       # 🧠 AI 核心源码
-│   ├── cli.js                 # 命令行交互
-│   ├── llm.js                 # LLM 调用
-│   ├── tools.js               # 工具函数注册
-│   ├── skill-manager.js       # 技能管理器
-│   ├── gateway/               # HTTP API 网关
-│   ├── mcp/                   # MCP 协议客户端
-│   ├── workspace/             # 工作区管理
-│   └── ...
-│
-├── skills/                    # 🧠 技能模块
-├── tests/                     # 🧠 测试文件
-│
-├── server/                    # 📡 eclaw-server（中转调度服务器）
-│   ├── server.js              # 主服务器入口
-│   ├── package.json           # 独立依赖配置（CommondJS）
-│   ├── cloud-sync.js          # 云同步
-│   ├── wclaw/                 # 网页前端
-│   │   ├── index.html         # 主页面
-│   │   ├── app.js             # 前端入口
-│   │   ├── app-base.js        # 基础逻辑
-│   │   ├── app-auth.js        # 登录认证
-│   │   ├── app-main.js        # 主逻辑
-│   │   ├── styles.css         # 样式
-│   │   └── icon/              # 图标
-│   └── README.md              # 详细部署说明
-│
-├── client/                    # 🤖 claw-client（远程执行终端）
-│   ├── index.js               # 终端入口
-│   ├── package.json           # 独立依赖配置（CommonJS）
-│   ├── status-monitor.js      # 状态监控
-│   ├── start.sh               # 启动脚本
-│   └── README.md              # 详细部署说明
-│
-├── data/                      # 🧠 AI 运行时数据
-├── uploads/                   # 📡 文件上传目录
-├── memory/                    # 🧠 持久化记忆
-│
-├── opencrab.service           # 🧠 AI systemd 服务模板
-├── client/cclaw.service       # 🤖 终端 systemd 服务模板
-│
-└── README.md                  # 本文件（中英文）
+└── xCrab/                      # 🧠 AI 执行引擎（主目录）
+    ├── index.js                # 入口文件
+    ├── package.json            # 依赖管理
+    ├── .env.example            # 环境变量模板
+    ├── .env                    # 环境变量（需自行创建）
+    │
+    ├── src/                    # 🧠 AI 核心源码
+    │   ├── cli.js              # 命令行交互
+    │   ├── llm.js              # LLM 调用（MiniMax/DeepSeek）
+    │   ├── tools.js            # 工具函数注册
+    │   ├── skill-manager.js    # 技能管理器
+    │   ├── gateway/            # HTTP API 网关
+    │   │   ├── server.js       # Gateway 服务
+    │   │   ├── api-handler.js  # API 处理
+    │   │   ├── llm-stream.js   # 流式 LLM 响应
+    │   │   └── frontend/       # xCrab 自带前端
+    │   ├── config.js           # 配置管理
+    │   ├── history.js          # 对话历史
+    │   ├── planner.js          # 任务规划
+    │   └── mcp/                # MCP 协议客户端
+    │
+    ├── skills/                 # 🧠 技能模块
+    ├── tests/                  # 🧠 测试文件
+    │
+    ├── eclaw/                  # 📡 服务调度端
+    │   ├── server.js           # 服务入口（含 API + WebSocket）
+    │   ├── cloud-sync.js       # 数据库配置模块
+    │   ├── package.json        # 依赖（express, mysql2, ws）
+    │   └── users.json          # 本地用户缓存
+    │
+    ├── wclaw/                  # 🖥️ 网页客户端
+    │   ├── index.html          # 主页面
+    │   ├── app.js              # 前端入口
+    │   ├── app-base.js         # 基础逻辑
+    │   ├── app-auth.js         # 登录认证
+    │   ├── app-main.js         # 主逻辑
+    │   ├── styles.css          # 样式
+    │   └── icon/               # 图标
+    │
+    ├── cclaw/                  # 🤖 远程分发端
+    │   ├── index.js            # 终端入口
+    │   ├── status-monitor.js   # 状态监控
+    │   ├── package.json        # 依赖
+    │   └── data/               # agent 配置
+    │
+    ├── data/                   # AI 运行时数据
+    └── uploads/                # 文件上传目录
 ```
 
 ---
@@ -362,44 +457,21 @@ OpenCrab/
 
 | 问题 | 解决方案 |
 |------|----------|
-| `MINIMAX_API_KEY` 未配置 | 检查 `.env` 文件是否正确配置 |
+| MySQL 连接失败：`ECONNREFUSED` | 检查 MySQL 服务是否启动：`systemctl status mysql` |
+| MySQL 连接失败：`ER_ACCESS_DENIED_ERROR` | 检查 `.env` 中的 `DB_USER` 和 `DB_PASS` 是否正确 |
+| MySQL 连接失败：`ER_BAD_DB_ERROR` | 先创建数据库：`mysql -u root -p -e "CREATE DATABASE wclaw_db"` |
+| MiniMax API 返回 401 | 检查 `MINIMAX_API_KEY` 是否正确 |
+| 网页端访问 404 | 确认 `eclaw/server.js` 中的静态文件路径指向 `../wclaw/` |
+| 端口被占用 | 修改 `.env` 中的 `ECLAW_PORT` 或 `GATEWAY_PORT` |
 | `better-sqlite3` 安装失败 | 安装 build-essential（Linux）或 VS Build Tools（Windows） |
-| 端口被占用 | 修改 `.env` 中的 `GATEWAY_PORT` 或 `ECLAW_PORT` |
-| WebSocket 连接失败 | 检查 `ECLAW_WS_URL` 地址和端口是否正确 |
-| eclaw-server 启动后无法访问前端 | 确认 `wclaw/` 目录存在且 `server.js` 正确配置了静态文件路径 |
-| PM2 重启后 API 密钥未生效 | 使用 `ecosystem.config.cjs` 配置环境变量，或在 PM2 命令中通过 `--env` 传递 |
-
-### 使用 PM2 管理进程
-
-PM2 重启后可能无法正确加载 `.env` 文件中的环境变量，导致 `[warn] API密钥未提供，某些功能可能受限`。
-
-**解决方案：** 创建 `ecosystem.config.cjs` 配置文件，在其中直接指定环境变量：
-
-```javascript
-module.exports = {
-  apps: [{
-    name: 'OpenCrab',
-    script: './index.js',
-    instances: 1,
-    autorestart: true,
-    env: {
-      NODE_ENV: 'production',
-      MINIMAX_API_KEY: '你的完整API密钥',
-      SERVER_PORT: 3000,
-      AUTH_PASSWORD: '你的认证密码'
-    }
-  }]
-};
-```
-
-启动命令：
-```bash
-pm2 start ecosystem.config.cjs
-pm2 save  # 保存进程列表
-pm2 startup  # 设置开机自启
-```
 
 ### 获取 API 密钥
 
 - **MiniMax API**：前往 [https://platform.minimaxi.com](https://platform.minimaxi.com) 注册获取
 - **DeepSeek API**（可选）：前往 [https://platform.deepseek.com](https://platform.deepseek.com) 注册获取
+
+---
+
+## 📝 License
+
+MIT
