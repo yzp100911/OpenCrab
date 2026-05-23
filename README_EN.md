@@ -475,3 +475,71 @@ OpenCrab/
 ## 📝 License
 
 MIT
+# ⚠️ Brand Statement
+
+> **OpenCrab is an independent open-source project. It is NOT affiliated with, endorsed by, or connected to OpenClaw (openclaw.ai) or any related projects.**
+
+---
+
+## �独立的声明
+
+OpenCrab is a **multi-model AI gateway** independently developed and maintained by the open-source community. It is a separate project from **OpenClaw** (openclaw.ai) and has no organizational, technical, or marketing affiliation with the OpenClaw team.
+
+**Key Differences:**
+
+| Item | OpenCrab | OpenClaw |
+|------|----------|----------|
+| **Type** | Multi-model AI Gateway | AI Personal Assistant |
+| **Focus** | Model aggregation & routing | Autonomous task execution |
+| **Models** | MiniMax, DeepSeek, etc. | Claude, GPT, Gemini, etc. |
+| **License** | MIT | MIT |
+| **Maintainer** | Community | openclaw team |
+
+---
+
+## 📌 Project Positioning
+
+OpenCrab is designed as a **lightweight, high-performance AI gateway framework** that:
+
+- Provides unified API access to multiple LLM providers
+- Supports MiniMax, DeepSeek, and other mainstream models
+- Offers flexible routing and load balancing
+- Enables easy extension for new models
+
+Our mission is to make AI model integration simpler and more accessible.
+
+---
+
+## 🦀 Naming Origin
+
+The name **"Crab"** is inspired by the creature's characteristics:
+
+- **Multi-tasking**: Crabs can move in multiple directions simultaneously, just like OpenCrab routing requests across different AI models
+- **Resilience**: Hard shell, adaptable nature — reflecting the project's robustness
+- **Community-driven**: Like crabs living in colonies, OpenCrab grows with community contributions
+
+The "x" prefix follows the Unix naming convention (e.g., `xorg`, `xref`), while "Crab" represents the project's identity. This naming has no relation to OpenClaw's branding or the "Claw" terminology.
+
+---
+
+## ⚖️ Trademark Disclaimer
+
+- **OpenCrab**™ is used to identify our open-source project only
+- This trademark does not grant any rights to use the name in commercial products or services
+- Any similarity to other trademarks is coincidental
+- Users of this software assume all responsibilities for their own compliance with applicable laws and regulations
+
+---
+
+## 🤝 Contribution & Contact
+
+OpenCrab is an open-source project licensed under MIT. We welcome contributions from developers worldwide.
+
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/yzp100911/OpenCrab/issues)
+- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/yzp100911/OpenCrab/discussions)
+- 📖 **Documentation**: Pull requests welcome
+- ⭐ **Star & Share**: Your support motivates us
+
+---
+
+*This statement was last updated: $(date +%Y-%m-%d)*
