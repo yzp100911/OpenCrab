@@ -32,3 +32,9 @@ xCrab/src/memory/*.js
 
 # Sessions
 sessions/
+
+# Database files (runtime generated)
+xCrab/data/*.db
+xCrab/data/*.db-shm
+xCrab/data/*.db-wal
+xCrab/.data/
