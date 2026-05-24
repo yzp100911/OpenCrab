@@ -73,55 +73,114 @@ For any brand-related issues, please contact the project maintainer via GitHub I
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Deploy
 
-### 📋 Requirements
-
-| Environment | Requirement |
-|-------------|-------------|
-| **Node.js** | **v22.12 or higher** |
-| **npm** | Bundled with Node.js |
-| **MySQL** | **8.0+** (must be installed and running) |
-| **OS** | Windows 10+ / Ubuntu 20.04+ / macOS |
-
----
-
-## 🪟 Windows Deployment (Simplified)
+### Option 1: One-Click Deploy (Linux, Recommended)
 
 ```bash
 git clone https://github.com/yzp100911/skillgate-agent.git
 cd skillgate-agent
-cd xCrab
-npm install
-
-# Configure .env (fill in API_KEY and DB_PASS)
-copy .env.example .env
-
-# Start (three terminals)
-cd xCrab && npm start                              # AI Execution Engine
-cd xCrab/eclaw && node server.js                   # Service Dispatcher
-# Visit http://localhost:10090
+chmod +x deploy.sh
+./deploy.sh
 ```
 
----
+### Option 2: Manual Deploy (Linux Server)
 
-## ⚙️ Core Environment Variables
+```bash
+# 1. Clone the repository
+git clone https://github.com/yzp100911/skillgate-agent.git
+cd skillgate-agent
 
-### xCrab AI Execution Engine
+# 2. Enter xCrab directory
+cd xCrab
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `MINIMAX_API_KEY` | ✅ | MiniMax API Key |
-| `DEEPSEEK_API_KEY` | ❌ | DeepSeek API Key |
+# 3. Install dependencies
+npm install
 
-### eclaw Service Dispatcher
+# 4. Configure environment
+cp .env.example .env
+nano .env  # Fill in AUTH_TOKEN and MINIMAX_API_KEY
 
-| Variable | Default | Required | Description |
-|----------|---------|----------|-------------|
-| `ECLAW_PORT` | `10090` | ❌ | Web access port |
-| `DB_PASS` | — | ✅ | **Your MySQL password** |
+# 5. Start the service
+chmod +x start.sh
+./start.sh
 
----
+# 6. Verify the service
+curl -H "Authorization: Bearer YOUR_AUTH_TOKEN" \
+     http://localhost:60016/api/chat \
+     -d '{"message":"Hello"}'
+```
+
+### Option 3: Windows Deploy
+
+```bash
+git clone https://github.com/yzp100911/skillgate-agent.git
+cd skillgate-agent\xCrab
+npm install
+copy .env.example .env
+# Edit .env and fill in API_KEY
+npm start
+```
+
+## 📋 Requirements
+
+| Environment | Requirement |
+|-------------|-------------|
+| **Node.js** | **18+** |
+| **npm** | Bundled with Node.js |
+| **PM2** | Required for Linux (process manager) |
+| **OS** | Windows 10+ / Ubuntu 20.04+ / macOS |
+
+## ⚙️ Environment Variables
+
+Edit `xCrab/.env` file:
+
+```bash
+# Required
+AUTH_TOKEN=your_secure_token_here
+MINIMAX_API_KEY=your_api_key_here
+
+# Optional (with defaults)
+MINIMAX_BASE_URL=https://api.minimaxi.com/v1
+MINIMAX_MODEL=MiniMax-M2.7
+PORT=60016
+ENABLE_MEMORY=true
+GATEWAY_ENABLED=true
+GATEWAY_TOKEN=your_gateway_token_here
+```
+
+## 🌐 API Usage
+
+### Chat Endpoint
+
+```bash
+curl -X POST http://localhost:60016/api/chat \
+  -H "Authorization: Bearer YOUR_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Hello, introduce yourself"}'
+```
+
+### Response Format
+
+```json
+{
+  "code": 200,
+  "data": {
+    "content": "Hello! I am xCrab...",
+    "sessionId": "xxx-xxx-xxx"
+  }
+}
+```
+
+## 🛠 PM2 Management Commands
+
+```bash
+pm2 status xcrab       # Check status
+pm2 logs xcrab         # View logs
+pm2 restart xcrab      # Restart
+pm2 stop xcrab         # Stop
+pm2 delete xcrab       # Delete process
+```
 
 ## 🌟 Key Features
 
@@ -133,27 +192,29 @@ cd xCrab/eclaw && node server.js                   # Service Dispatcher
 | 💾 **Session Management** | History, favorites, feedback mechanism |
 | 🔒 **Secure & Reliable** | API authentication, command execution control |
 
----
-
 ## 📂 Project Structure
 
 ```
 skillgate-agent/
-├── xCrab/                      # AI Execution Engine
-│   ├── src/
-│   │   ├── core/               # Core modules
-│   │   ├── skills/             # Skills modules
-│   │   └── mcp/                 # MCP client
-│   ├── eclaw/                  # Service Dispatcher
-│   │   └── server.js           # API service
-│   ├── cclaw/                  # Remote Distributor
-│   └── wclaw/                  # Web Client
-│
-├── README.md
-└── README_EN.md
+├── deploy.sh                 # One-click deploy script
+├── README.md                 # Chinese documentation
+├── README_EN.md              # English documentation
+├── .env.example              # Root env template
+├── LICENSE                   # License
+├── xCrab/                    # AI Execution Engine
+│   ├── index.js              # Main entry
+│   ├── src/                  # Core source
+│   │   ├── tools.js          # Utility functions
+│   │   └── memory/           # Memory system
+│   ├── skills/               # Skills modules
+│   ├── eclaw/                # Service Dispatcher
+│   ├── cclaw/                # Remote Distributor
+│   ├── wclaw/                # Web Client
+│   ├── data/                 # Data storage
+│   ├── start.sh              # Start script
+│   ├── ecosystem.config.cjs  # PM2 config
+│   └── .env.example          # Env template
 ```
-
----
 
 ## 📄 License
 
