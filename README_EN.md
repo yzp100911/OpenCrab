@@ -1,8 +1,8 @@
-# skillgate-agent 🦀
+# skillgate-agent 🦀 (Fully Open Source)
 
-**skillgate-agent** — AI Personal Assistant Suite, containing four core components: **xCrab (AI Execution Engine)**, **eclaw (Service Dispatcher)**, **cclaw (Remote Distributor)**, and **wclaw (Web Client)**.
+An AI-Agent framework based on MiniMax-M2.7 (with custom model support), containing four core components: **xCrab (AI Execution Engine)**, **eclaw (Service Dispatcher)**, **cclaw (Remote Distributor)**, and **wclaw (Web Client)**.
 
-One repository, complete deployment.
+Deploy everything with a single repository! [If you find it too tedious, you can use AI coding tools (Claude Code, Codex, Windsurf, OpenCode, Trae) to help you deploy.]
 
 ---
 
@@ -10,14 +10,14 @@ One repository, complete deployment.
 
 ```
 skillgate-agent/
-├── deploy.sh              # One-click deploy script
+├── deploy.sh              # One-click deployment script
 ├── README.md              # Chinese documentation
 ├── README_EN.md           # English documentation (this file)
-├── .env.example           # Root env template
+├── .env.example           # Root environment variable template
 ├── LICENSE                # MIT License
 ├── xCrab/                 # AI Execution Engine (core)
-│   ├── README.md          # xCrab Chinese docs
-│   ├── README_EN.md       # xCrab English docs
+│   ├── README.md          # xCrab detailed docs (Chinese)
+│   ├── README_EN.md       # xCrab detailed docs (English)
 │   ├── index.js           # Main entry
 │   ├── src/               # Core source code
 │   ├── skills/            # Skill modules
@@ -28,12 +28,12 @@ skillgate-agent/
 
 ## Features
 
-- 🤖 **AI Chat** - Powered by MiniMax-M2.7
-- 🦀 **Skill System** - Dynamic loading (browser automation, translation, etc.)
+- 🤖 **AI Chat** - Powered by MiniMax-M2.7 model
+- 🦀 **Skill System** - Dynamic loading of various skills (browser automation, translation, etc.)
 - 💾 **Memory System** - Session history storage and retrieval
-- 🔐 **Gateway Auth** - Token-based authentication
-- 🌐 **Browser Automation** - Optional Playwright support
-- 📡 **Multi-Module** - xCrab, eclaw, cclaw, wclaw
+- 🔐 **Gateway Auth** - Token-based authentication protection
+- 🌐 **Browser Automation** - Optional Playwright browser control
+- 📡 **Multi-Module Architecture** - Integrates xCrab, eclaw, cclaw, wclaw
 
 ## Quick Deployment
 
@@ -63,11 +63,11 @@ cd skillgate-agent/xCrab
 # 4. Install dependencies
 npm install
 
-# 5. Configure environment
+# 5. Configure environment variables
 cp .env.example .env
 # Edit .env, fill in MINIMAX_API_KEY and AUTH_TOKEN
 
-# 6. Start service
+# 6. Start the service
 chmod +x start.sh
 ./start.sh
 
@@ -83,9 +83,12 @@ curl http://localhost:60016/health
 
 ## Detailed Documentation
 
+Refer to the README in each module's directory for detailed deployment and usage instructions:
+
 | Module | Description | Docs |
 |--------|-------------|------|
-| xCrab | AI Execution Engine (Core) | [xCrab/README_EN.md](xCrab/README_EN.md) |
+| xCrab | AI Execution Engine (Core) | [xCrab/README.md](xCrab/README.md) |
+| xCrab (EN) | AI Execution Engine | [xCrab/README_EN.md](xCrab/README_EN.md) |
 
 ## Configuration
 
@@ -121,7 +124,7 @@ pm2 delete xcrab       # Delete process
 curl -X POST http://localhost:60016/api/chat \
   -H "Authorization: Bearer YOUR_AUTH_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"message":"Hello, introduce yourself"}'
+  -d '{"message":"Hello, please introduce yourself"}'
 ```
 
 ## Health Check

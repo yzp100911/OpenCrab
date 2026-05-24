@@ -1,8 +1,8 @@
-# skillgate-agent 🦀
+# skillgate-agent 🦀（已全开源）
 
-基于 MiniMax-M2.7 的智能 AI 助手套件，包含 **xCrab (AI执行引擎)**、**eclaw (服务分发器)**、**cclaw (远程分发器)** 和 **wclaw (Web客户端)** 四大核心组件。
+基于 MiniMax-M2.7 （也可以自定义模型）的 AI - Agent框架，包含 **xCrab (AI执行引擎)**、**eclaw (服务分发器)**、**cclaw (远程分发器)** 和 **wclaw (Web客户端)** 四大核心组件。
 
-一套仓库，完整部署。
+一套仓库，即可完整部署！【如果你实在嫌麻烦，你可以让Ai编程工具(Claude code，Codex，Windsurf，OpenCode，Trae）帮你部署即可】
 
 ---
 
@@ -17,6 +17,7 @@ skillgate-agent/
 ├── LICENSE                # MIT 许可证
 ├── xCrab/                 # AI 执行引擎（核心）
 │   ├── README.md          # xCrab 详细文档
+│   ├── README_EN.md       # xCrab 英文文档
 │   ├── index.js           # 主入口
 │   ├── src/               # 核心源码
 │   ├── skills/            # 技能模块
