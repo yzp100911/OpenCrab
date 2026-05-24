@@ -110,26 +110,22 @@ pm2 delete xcrab       # 删除进程
 ```
 skillgate-agent/
 ├── xCrab/
-│   ├── src/
-│   │   ├── index.js          # 主入口
-│   │   ├── api.js            # API 路由
-│   │   ├── bot.js            # Bot 逻辑
+│   ├── index.js              # 主入口
+│   ├── src/                  # 源代码
+│   │   ├── tools.js          # 工具函数
 │   │   ├── memory/           # 记忆系统
 │   │   │   └── store.js      # 存储模块
-│   │   └── skills/           # 技能目录
+│   │   └── ...               # 其他模块
 │   ├── .env.example         # 环境变量模板
 │   ├── package.json
 │   ├── start.sh             # 启动脚本
 │   └── ecosystem.config.js  # PM2 配置
 ├── deploy.sh                # 一键部署脚本
 ├── README.md
+├── README_EN.md
 └── .gitignore
 ```
-
-## 常见问题
-
-### 1. 启动失败
-
+检查日志：`pm2 logs xcrab`
 检查日志：`pm2 logs xcrab`
 
 常见原因：

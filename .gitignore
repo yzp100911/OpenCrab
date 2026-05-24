@@ -30,11 +30,15 @@ build/
 xCrab/src/memory/*.js
 !xCrab/src/memory/store.js
 
-# Sessions
-sessions/
-
 # Database files (runtime generated)
 xCrab/data/*.db
 xCrab/data/*.db-shm
 xCrab/data/*.db-wal
 xCrab/.data/
+
+# Unrelated junk files
+xCrab/20000
+xCrab/Text.txt
+xCrab/Text260523.txt
+xCrab/*.py
+xCrab/dotnet-install.sh

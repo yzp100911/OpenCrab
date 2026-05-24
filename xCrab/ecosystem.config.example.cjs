@@ -1,17 +1,21 @@
+const path = require('path');
+
 module.exports = {
   apps: [{
     name: 'xcrab',
     script: 'index.js',
-    cwd: './xCrab',
+    cwd: __dirname,
     env: {
       NODE_ENV: 'production',
-      // ⚠️ 请在 .env 文件中配置以下环境变量，或直接在此处填写
+      PORT: '60016',
+      AUTH_TOKEN: 'your_auth_token_here',
       MINIMAX_API_KEY: 'your_api_key_here',
       MINIMAX_BASE_URL: 'https://api.minimaxi.com/v1',
-      SERVER_PORT: '60016',
-      SERVER_PASSWORD: 'your_password_here',
-      MODEL: 'MiniMax-M2.7',
-      ENABLE_MEMORY: 'false',
+      MINIMAX_MODEL: 'MiniMax-M2.7',
+      ENABLE_MEMORY: 'true',
+      GATEWAY_ENABLED: 'true',
+      GATEWAY_PORT: '60016',
+      GATEWAY_TOKEN: 'your_gateway_token_here',
       HEADLESS: 'true'
     }
   }]

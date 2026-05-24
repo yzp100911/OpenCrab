@@ -1,20 +1,22 @@
+const path = require('path');
+
 module.exports = {
   apps: [{
     name: 'xcrab',
     script: 'index.js',
-    cwd: '/root/skillgate-agent/xCrab',
+    cwd: __dirname,
     env: {
       NODE_ENV: 'production',
-      MINIMAX_API_KEY: 'sk-cp-w_-_nNk1OzVjSev4wMCrFAvaQdw_CSDiyBX7BqQuLyFaS71CfDHMz3C7mg-nnUvtP9HFvTdoWUgv8cMVSsyAbR3BFslWYmO0DOgN_me2QWMCryvdwwfNUWA',
-      MINIMAX_BASE_URL: 'https://api.minimaxi.com/v1',
-      SERVER_PORT: '60016',
-      SERVER_PASSWORD: '100911yzpYZP',
-      MODEL: 'MiniMax-M2.7',
-      ENABLE_MEMORY: 'false',
-      HEADLESS: 'true',
-      GATEWAY_ENABLED: 'true',
-      GATEWAY_PORT: '60016',
-      GATEWAY_TOKEN: '100911yzpYZP'
+      PORT: process.env.PORT || '60016',
+      AUTH_TOKEN: process.env.AUTH_TOKEN || '',
+      MINIMAX_API_KEY: process.env.MINIMAX_API_KEY || '',
+      MINIMAX_BASE_URL: process.env.MINIMAX_BASE_URL || 'https://api.minimaxi.com/v1',
+      MINIMAX_MODEL: process.env.MINIMAX_MODEL || 'MiniMax-M2.7',
+      ENABLE_MEMORY: process.env.ENABLE_MEMORY || 'true',
+      GATEWAY_ENABLED: process.env.GATEWAY_ENABLED || 'true',
+      GATEWAY_PORT: process.env.GATEWAY_PORT || '60016',
+      GATEWAY_TOKEN: process.env.GATEWAY_TOKEN || '',
+      HEADLESS: process.env.HEADLESS || 'true'
     }
   }]
 };
